@@ -180,11 +180,11 @@ class AutoStitchFunctions:
             for zdir in sorted(ct_dir[1]):
                 print("-->" + zdir)
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range")
-                range_list = os.listdir(temp_path)
-                for index in range_list:
-                    try:
-                        index_path = os.path.join(temp_path, index)
-                        if os.path.isdir(index_path):
+                if os.path.isdir(temp_path):
+                    range_list = os.listdir(temp_path)
+                    for index in range_list:
+                        try:
+                            index_path = os.path.join(temp_path, index)
                             tomo_path = os.path.join(index_path, "tomo")
                             flats_path = os.path.join(index_path, "flats")
                             darks_path = os.path.join(index_path, "darks")
@@ -193,10 +193,12 @@ class AutoStitchFunctions:
                             cmd += ' --projections {}'.format(tomo_path)
                             cmd += ' --flats {}'.format(flats_path)
                             cmd += ' --darks {}'.format(darks_path)
-                            cmd += ' --output {}'.format(index_path + '-%04i.tif')
+                            #cmd += ' --output {}'.format(index_path + '-%04i.tif')
+                            cmd += ' --output {}'.format(os.path.join(index_path, 'ffc', '-%04i.tif'))
                             os.system(cmd)
-                    except NotADirectoryError:
-                        print("Skipped - Not a Directory: " + index_path)
+                        except NotADirectoryError:
+                            print("Skipped - Not a Directory: " + index_path)
+
 
     def print_parameters(self):
         """
