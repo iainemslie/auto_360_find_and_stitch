@@ -193,7 +193,7 @@ class AutoStitchFunctions:
                         cmd += ' --flats {}'.format(flats_path)
                         cmd += ' --darks {}'.format(darks_path)
                         #cmd += ' --output {}'.format(index_path + '-%04i.tif')
-                        cmd += ' --output {}'.format(os.path.join(index_path, 'ffc', str(index)+'-sli-0.tif'))
+                        cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', str(index) + '-sli-0.tif'))
                         os.system(cmd)
                         cmd = 'tofu flatcorrect --fix-nan-and-inf'
                         cmd += ' --projections {}'.format(tomo_path + "/Sli-180.tif")
