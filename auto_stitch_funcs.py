@@ -200,7 +200,7 @@ class AutoStitchFunctions:
                         cmd += ' --flats {}'.format(flats_path)
                         cmd += ' --darks {}'.format(darks_path)
                         # cmd += ' --output {}'.format(index_path + '-%04i.tif')
-                        cmd += ' --output {}'.format(os.path.join(index_path, 'ffc', str(index) + '-sli-180.tif'))
+                        cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', str(index) + '-sli-180.tif'))
                         os.system(cmd)
                     except NotADirectoryError:
                         print("Skipped - Not a Directory: " + index_path)
