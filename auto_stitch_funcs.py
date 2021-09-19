@@ -123,10 +123,10 @@ class AutoStitchFunctions:
                 first_180_degree_image_path = os.path.join(tmp_path, first_180_degree_image)
                 second_180_degree_image_path = os.path.join(tmp_path, second_180_degree_image)
                 # Get the list of images in flats, darks
-                flats_list = sorted(os.listdir(os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats")))
                 tmp_flat_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats")
-                darks_list = sorted(os.listdir(os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "darks")))
+                flats_list = sorted(os.listdir(os.path.join(tmp_flat_path)))
                 tmp_dark_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "darks")
+                darks_list = sorted(os.listdir(os.path.join(tmp_dark_path)))
                 # For each axis value in overlap range we stitch corresponding images and save to temp directory
                 pool = mp.Pool(processes=mp.cpu_count())
                 index = range(self.overlap_range + 1)
