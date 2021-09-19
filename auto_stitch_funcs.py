@@ -137,7 +137,7 @@ class AutoStitchFunctions:
                                         flats_list, tmp_flat_path, darks_list, tmp_dark_path)
                     pool.map(exec_func, index)
                 except NotADirectoryError:
-                    print(tmp_path + " is not a directory")
+                    print("Skipped - Not a Directory: " + tmp_path)
 
     def stitch_fdt(self, ct_dir, zdir, first_zero_degree_image_path, second_zero_degree_image_path,
                    first_180_degree_image_path, second_180_degree_image_path, flats_list, tmp_flat_path,
@@ -172,7 +172,7 @@ class AutoStitchFunctions:
         """
         Get flats/darks/tomo paths in temp directory and call tofu flat correction
         """
-        ct_items = self.z_dirs.items()
+        ct_items = sorted(self.z_dirs.items())
         for ct_dir in ct_items:
             print(ct_dir[0])
             for zdir in ct_dir[1]:
@@ -180,17 +180,21 @@ class AutoStitchFunctions:
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range")
                 range_list = os.listdir(temp_path)
                 for index in range_list:
-                    index_path = os.path.join(temp_path, index)
-                    tomo_path = os.path.join(index_path, "tomo")
-                    flats_path = os.path.join(index_path, "flats")
-                    darks_path = os.path.join(index_path, "darks")
-                    # Flat correct image using darks and flats - save tomo/ffc
-                    cmd = 'tofu flatcorrect --fix-nan-and-inf'
-                    cmd += ' --projections {}'.format(tomo_path)
-                    cmd += ' --flats {}'.format(flats_path)
-                    cmd += ' --darks {}'.format(darks_path)
-                    cmd += ' --output {}'.format(index_path + 'ffc-%04i.tif')
-                    os.system(cmd)
+                    try:
+                        index_path = os.path.join(temp_path, index)
+                        os.path.isdir(index_path)
+                        tomo_path = os.path.join(index_path, "tomo")
+                        flats_path = os.path.join(index_path, "flats")
+                        darks_path = os.path.join(index_path, "darks")
+                        # Flat correct image using darks and flats - save tomo/ffc
+                        cmd = 'tofu flatcorrect --fix-nan-and-inf'
+                        cmd += ' --projections {}'.format(tomo_path)
+                        cmd += ' --flats {}'.format(flats_path)
+                        cmd += ' --darks {}'.format(darks_path)
+                        cmd += ' --output {}'.format(index_path + '-%04i.tif')
+                        os.system(cmd)
+                    except NotADirectoryError:
+                        print("Skipped - Not a Directory: " + index_path)
 
     def print_parameters(self):
         """
