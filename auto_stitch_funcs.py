@@ -40,7 +40,7 @@ class AutoStitchFunctions:
         print("--> Finished Stitching")
 
         # Do flat field correction for sli-0 and sli-180 for each possible range value
-        print("--> Flat Field Correction...")
+        print("--> Begin Flat Field Correction...")
         self.flat_field_correction()
         print("--> Finished Flat Field Correction")
 
@@ -177,24 +177,24 @@ class AutoStitchFunctions:
         ct_items = sorted(self.z_dirs.items())
         for ct_dir in ct_items:
             print(ct_dir[0])
-            for zdir in ct_dir[1]:
+            for zdir in sorted(ct_dir[1]):
                 print("-->" + zdir)
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range")
                 range_list = os.listdir(temp_path)
                 for index in range_list:
                     try:
                         index_path = os.path.join(temp_path, index)
-                        os.path.isdir(index_path)
-                        tomo_path = os.path.join(index_path, "tomo")
-                        flats_path = os.path.join(index_path, "flats")
-                        darks_path = os.path.join(index_path, "darks")
-                        # Flat correct image using darks and flats - save tomo/ffc
-                        cmd = 'tofu flatcorrect --fix-nan-and-inf'
-                        cmd += ' --projections {}'.format(tomo_path)
-                        cmd += ' --flats {}'.format(flats_path)
-                        cmd += ' --darks {}'.format(darks_path)
-                        cmd += ' --output {}'.format(index_path + '-%04i.tif')
-                        os.system(cmd)
+                        if os.path.isdir(index_path):
+                            tomo_path = os.path.join(index_path, "tomo")
+                            flats_path = os.path.join(index_path, "flats")
+                            darks_path = os.path.join(index_path, "darks")
+                            # Flat correct image using darks and flats - save tomo/ffc
+                            cmd = 'tofu flatcorrect --fix-nan-and-inf'
+                            cmd += ' --projections {}'.format(tomo_path)
+                            cmd += ' --flats {}'.format(flats_path)
+                            cmd += ' --darks {}'.format(darks_path)
+                            cmd += ' --output {}'.format(index_path + '-%04i.tif')
+                            os.system(cmd)
                     except NotADirectoryError:
                         print("Skipped - Not a Directory: " + index_path)
 
