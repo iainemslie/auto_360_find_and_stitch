@@ -109,31 +109,35 @@ class AutoStitchFunctions:
         for ct_dir in ct_items:
             for zdir in ct_dir[1]:
                 # Get list of image names in the directory
-                image_list = sorted(os.listdir(os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")))
-                num_images = len(image_list)
-                # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
-                first_zero_degree_image = image_list[0]
-                second_zero_degree_image = image_list[int(num_images/2)]
-                first_180_degree_image = image_list[int((num_images/2)+1)]
-                second_180_degree_image = image_list[num_images-1]
-                # Get absolute paths for these images
-                tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
-                first_zero_degree_image_path = os.path.join(tmp_path, first_zero_degree_image)
-                second_zero_degree_image_path = os.path.join(tmp_path, second_zero_degree_image)
-                first_180_degree_image_path = os.path.join(tmp_path, first_180_degree_image)
-                second_180_degree_image_path = os.path.join(tmp_path, second_180_degree_image)
-                # Get the list of images in flats, darks
-                tmp_flat_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats")
-                flats_list = sorted(os.listdir(os.path.join(tmp_flat_path)))
-                tmp_dark_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "darks")
-                darks_list = sorted(os.listdir(os.path.join(tmp_dark_path)))
-                # For each axis value in overlap range we stitch corresponding images and save to temp directory
-                pool = mp.Pool(processes=mp.cpu_count())
-                index = range(self.overlap_range + 1)
-                exec_func = partial(self.stitch_fdt, ct_dir, zdir, first_zero_degree_image_path, second_zero_degree_image_path,
-                                    first_180_degree_image_path, second_180_degree_image_path,
-                                    flats_list, tmp_flat_path, darks_list, tmp_dark_path)
-                pool.map(exec_func, index)
+                try:
+                    tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
+                    image_list = sorted(tmp_path)
+                    num_images = len(image_list)
+                    # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
+                    first_zero_degree_image = image_list[0]
+                    second_zero_degree_image = image_list[int(num_images/2)]
+                    first_180_degree_image = image_list[int((num_images/2)+1)]
+                    second_180_degree_image = image_list[num_images-1]
+                    # Get absolute paths for these images
+
+                    first_zero_degree_image_path = os.path.join(tmp_path, first_zero_degree_image)
+                    second_zero_degree_image_path = os.path.join(tmp_path, second_zero_degree_image)
+                    first_180_degree_image_path = os.path.join(tmp_path, first_180_degree_image)
+                    second_180_degree_image_path = os.path.join(tmp_path, second_180_degree_image)
+                    # Get the list of images in flats, darks
+                    tmp_flat_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats")
+                    flats_list = sorted(os.listdir(os.path.join(tmp_flat_path)))
+                    tmp_dark_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "darks")
+                    darks_list = sorted(os.listdir(os.path.join(tmp_dark_path)))
+                    # For each axis value in overlap range we stitch corresponding images and save to temp directory
+                    pool = mp.Pool(processes=mp.cpu_count())
+                    index = range(self.overlap_range + 1)
+                    exec_func = partial(self.stitch_fdt, ct_dir, zdir, first_zero_degree_image_path, second_zero_degree_image_path,
+                                        first_180_degree_image_path, second_180_degree_image_path,
+                                        flats_list, tmp_flat_path, darks_list, tmp_dark_path)
+                    pool.map(exec_func, index)
+                except NotADirectoryError:
+                    print(tmp_path + " is not a directory")
 
     def stitch_fdt(self, ct_dir, zdir, first_zero_degree_image_path, second_zero_degree_image_path,
                    first_180_degree_image_path, second_180_degree_image_path, flats_list, tmp_flat_path,
