@@ -111,7 +111,7 @@ class AutoStitchFunctions:
                 # Get list of image names in the directory
                 try:
                     tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
-                    image_list = sorted(tmp_path)
+                    image_list = sorted(os.listdir(tmp_path))
                     num_images = len(image_list)
                     # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
                     first_zero_degree_image = image_list[0]
