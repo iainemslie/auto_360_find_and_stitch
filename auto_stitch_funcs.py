@@ -165,6 +165,9 @@ class AutoStitchFunctions:
             self.open_images_and_stitch(rotation_axis, 0, first_dark_path, second_dark_path, dark_out_path)
 
     def flat_field_correction(self):
+        """
+        Get flats/darks/tomo paths in temp directory and call tofu flat correction
+        """
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
             print(ct_dir[0])
@@ -177,7 +180,7 @@ class AutoStitchFunctions:
                     tomo_path = os.path.join(index_path, "tomo")
                     flats_path = os.path.join(index_path, "flats")
                     darks_path = os.path.join(index_path, "darks")
-                    #Flat correct image using darks and flats - save tomo/ffc
+                    # Flat correct image using darks and flats - save tomo/ffc
                     cmd = 'tofu flatcorrect --fix-nan-and-inf'
                     cmd += ' --projections {}'.format(tomo_path)
                     cmd += ' --flats {}'.format(flats_path)
