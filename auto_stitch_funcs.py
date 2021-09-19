@@ -40,7 +40,9 @@ class AutoStitchFunctions:
         print("--> Finished Stitching")
 
         # Do flat field correction for sli-0 and sli-180 for each possible range value
+        print("--> Flat Field Correction...")
         self.flat_field_correction()
+        print("--> Finished Flat Field Correction")
 
     def find_ct_dirs(self):
         """
@@ -200,6 +202,7 @@ class AutoStitchFunctions:
         """
         Prints parameter values with line formatting
         """
+        print()
         print("**************************** Running Auto Stitch ****************************")
         print("======================== Parameters ========================")
         print("Input Directory: " + self.parameters['input_dir'])
