@@ -185,6 +185,7 @@ class AutoStitchFunctions:
                     cmd += ' --projections {}'.format(tomo_path)
                     cmd += ' --flats {}'.format(flats_path)
                     cmd += ' --darks {}'.format(darks_path)
+                    cmd += ' --output {}'.format(index_path)
                     os.system(cmd)
 
     def print_parameters(self):
