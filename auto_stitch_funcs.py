@@ -189,7 +189,7 @@ class AutoStitchFunctions:
                     cmd += ' --projections {}'.format(tomo_path)
                     cmd += ' --flats {}'.format(flats_path)
                     cmd += ' --darks {}'.format(darks_path)
-                    cmd += ' --output {}'.format(index_path)
+                    cmd += ' --output {}'.format(index_path + 'ffc-%04i.tif')
                     os.system(cmd)
 
     def print_parameters(self):
