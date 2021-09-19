@@ -148,8 +148,8 @@ class AutoStitchFunctions:
         rotation_axis = int(self.parameters['overlap_start']) + index
         out_path = os.path.join(self.parameters['temp_dir'], ct_dir[0],
                                 zdir, "range", str(rotation_axis))
-        slice_zero_path = os.path.join(out_path, "tomo", "Sli-0")
-        slice_180_path = os.path.join(out_path, "tomo", "Sli-180")
+        slice_zero_path = os.path.join(out_path, "tomo", "Sli-0.tif")
+        slice_180_path = os.path.join(out_path, "tomo", "Sli-180.tif")
         self.open_images_and_stitch(rotation_axis, 0, first_zero_degree_image_path,
                                     second_zero_degree_image_path, slice_zero_path)
         self.open_images_and_stitch(rotation_axis, 0, first_180_degree_image_path,
@@ -159,13 +159,13 @@ class AutoStitchFunctions:
         for flat_index in range(flat_midpoint):
             first_flat_path = os.path.join(tmp_flat_path, flats_list[flat_index])
             second_flat_path = os.path.join(tmp_flat_path, flats_list[flat_index + flat_midpoint])
-            flat_out_path = os.path.join(out_path, "flats", "Flat_stitched_{:>04}".format(flat_index))
+            flat_out_path = os.path.join(out_path, "flats", "Flat_stitched_{:>04}.tif".format(flat_index))
             self.open_images_and_stitch(rotation_axis, 0, first_flat_path, second_flat_path, flat_out_path)
         dark_midpoint = int(len(darks_list) / 2)
         for dark_index in range(dark_midpoint):
             first_dark_path = os.path.join(tmp_dark_path, darks_list[dark_index])
             second_dark_path = os.path.join(tmp_dark_path, darks_list[dark_index + dark_midpoint])
-            dark_out_path = os.path.join(out_path, "darks", "Dark_stitched_{:>04}".format(dark_index))
+            dark_out_path = os.path.join(out_path, "darks", "Dark_stitched_{:>04}.tif".format(dark_index))
             self.open_images_and_stitch(rotation_axis, 0, first_dark_path, second_dark_path, dark_out_path)
 
     def flat_field_correction(self):
