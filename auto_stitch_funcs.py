@@ -74,6 +74,9 @@ class AutoStitchFunctions:
         """
         for ct_dir in self.ct_list:
             zdir_list = os.listdir(self.parameters['input_dir'] + "/" + ct_dir)
+            for zdir in zdir_list:
+                if not os.path.isdir(self.parameters['input_dir'] + "/" + ct_dir + zdir):
+                    zdir_list.remove(zdir)
             self.z_dirs[ct_dir] = zdir_list
 
     def create_temp_dir(self):
@@ -204,7 +207,6 @@ class AutoStitchFunctions:
                         os.system(cmd)
                     except NotADirectoryError:
                         print("Skipped - Not a Directory: " + index_path)
-
 
     def print_parameters(self):
         """
