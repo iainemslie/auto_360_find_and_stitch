@@ -188,13 +188,13 @@ class AutoStitchFunctions:
                         flats_path = os.path.join(index_path, "flats")
                         darks_path = os.path.join(index_path, "darks")
                         # Flat correct image using darks and flats - save tomo/ffc
-                        cmd = 'tofu flatcorrect --fix-nan-and-inf'
+                        cmd = 'tofu flatcorrect --fix-nan-and-inf --output-bytes-per-file 0'
                         cmd += ' --projections {}'.format(tomo_path + "/Sli-0.tif")
                         cmd += ' --flats {}'.format(flats_path)
                         cmd += ' --darks {}'.format(darks_path)
                         cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', 'ffc-' + str(index) + '-sli-0.tif'))
                         os.system(cmd)
-                        cmd = 'tofu flatcorrect --fix-nan-and-inf'
+                        cmd = 'tofu flatcorrect --fix-nan-and-inf --output-bytes-per-file 0'
                         cmd += ' --projections {}'.format(tomo_path + "/Sli-180.tif")
                         cmd += ' --flats {}'.format(flats_path)
                         cmd += ' --darks {}'.format(darks_path)
