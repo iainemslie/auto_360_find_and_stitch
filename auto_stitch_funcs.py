@@ -33,7 +33,7 @@ class AutoStitchFunctions:
 
         # Create the temp directory and internal structure
         self.create_temp_dir()
-
+        '''
         # Get the images at 0 degrees and 180 degrees and stitch together the images
         print("--> Stitching...")
         self.find_and_stich_images()
@@ -43,6 +43,9 @@ class AutoStitchFunctions:
         print("--> Begin Flat Field Correction...")
         self.flat_field_correction()
         print("--> Finished Flat Field Correction")
+
+        # For each overlap range value - add the 0 degree and 180 degree images - save in projections
+        '''
 
     def find_ct_dirs(self):
         """
@@ -74,6 +77,9 @@ class AutoStitchFunctions:
         """
         for ct_dir in self.ct_list:
             zdir_list = os.listdir(self.parameters['input_dir'] + "/" + ct_dir)
+            for zdir in zdir_list:
+                if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
+                    zdir_list.remove(zdir)
             self.z_dirs[ct_dir] = zdir_list
 
     def create_temp_dir(self):
@@ -192,13 +198,13 @@ class AutoStitchFunctions:
                         cmd += ' --projections {}'.format(tomo_path + "/Sli-0.tif")
                         cmd += ' --flats {}'.format(flats_path)
                         cmd += ' --darks {}'.format(darks_path)
-                        cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', 'ffc-' + str(index) + '-sli-0.tif'))
+                        cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', str(index) + '-sli-0.tif'))
                         os.system(cmd)
                         cmd = 'tofu flatcorrect --fix-nan-and-inf --output-bytes-per-file 0'
                         cmd += ' --projections {}'.format(tomo_path + "/Sli-180.tif")
                         cmd += ' --flats {}'.format(flats_path)
                         cmd += ' --darks {}'.format(darks_path)
-                        cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', 'ffc-' + str(index) + '-sli-180.tif'))
+                        cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', str(index) + '-sli-180.tif'))
                         os.system(cmd)
                     except NotADirectoryError:
                         print("Skipped - Not a Directory: " + index_path)
