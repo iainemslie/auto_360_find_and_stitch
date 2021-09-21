@@ -45,7 +45,12 @@ class AutoStitchFunctions:
         print("--> Finished Flat Field Correction")
 
         # For each overlap range value - add the 0 degree and 180 degree images - save in projections
+        print("--> Subtracting images")
+        self.subtract_images()
 
+        # Use tofu gui method to find center of rotation without ffc
+
+        # Do horizontal stitching using horizontal overlap found in previous step
 
     def find_ct_dirs(self):
         """
