@@ -33,7 +33,7 @@ class AutoStitchFunctions:
 
         # Create the temp directory and internal structure
         self.create_temp_dir()
-        '''
+
         # Get the images at 0 degrees and 180 degrees and stitch together the images
         print("--> Stitching...")
         self.find_and_stich_images()
@@ -45,7 +45,7 @@ class AutoStitchFunctions:
         print("--> Finished Flat Field Correction")
 
         # For each overlap range value - add the 0 degree and 180 degree images - save in projections
-        '''
+
 
     def find_ct_dirs(self):
         """
