@@ -44,7 +44,7 @@ class AutoStitchFunctions:
         self.flat_field_correction()
         print("--> Finished Flat Field Correction")
 
-        # For each overlap range value - add the 0 degree and 180 degree images - save in projections
+        # For each overlap range value - subtract the 0 degree and 180 degree images - save in projections
         print("--> Subtracting images")
         self.subtract_images()
 
@@ -213,6 +213,19 @@ class AutoStitchFunctions:
                         os.system(cmd)
                     except NotADirectoryError:
                         print("Skipped - Not a Directory: " + index_path)
+
+    def subtract_images(self):
+        """
+        For each pair of 0 and 180 degree images. Flip the 180 degree image around the vertical axis
+        Subtract 180 degree image from the 0 degree image
+        Save the images to the projections directory
+        """
+        ct_items = sorted(self.z_dirs.items())
+        for ct_dir in ct_items:
+            for zdir in sorted(ct_dir[1]):
+                temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range", "ffc")
+                ffc_files = sorted(os.listdir(temp_path))
+                print(ffc_files)
 
     def print_parameters(self):
         """
