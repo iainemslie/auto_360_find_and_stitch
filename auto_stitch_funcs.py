@@ -226,15 +226,22 @@ class AutoStitchFunctions:
             for zdir in ct_dir[1]:
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range", "ffc")
                 for num in range(self.overlap_range + 1):
+                    # Create paths for corresponding 0 and 180 degree images - and for the output subtracted image
                     image_0_path = os.path.join(temp_path, str(overlap_start + num) + "-sli-0.tif")
                     image_180_path = os.path.join(temp_path, str(overlap_start + num) + "-sli-180.tif")
                     subtracted_image_path = os.path.join(self.parameters['temp_dir'], ct_dir[0],
                                                          zdir, "projections",
                                                          "sli-" + str(overlap_start + num) + ".tif")
+                    # Open corresponding 0 and 180 degree images
                     image_0 = tifffile.imread(image_0_path)
                     image_180 = tifffile.imread(image_180_path)
-                    print(type(image_0))
-                    print(type(image_180))
+                    # Flip the 180 degree image left-right (around "Cartesian y-axis")
+                    flipped_180_image = np.fliplr(image_180)
+                    # Subtract flipped 180 degree image from 0 degree image
+                    subtracted_image = np.subtract(flipped_180_image, image_0)
+                    # Save the subtracted image
+                    tifffile.imwrite(subtracted_image_path, subtracted_image)
+
 
     def print_parameters(self):
         """
