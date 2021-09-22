@@ -36,7 +36,7 @@ class AutoStitchFunctions:
 
         # Get the images at 0 degrees and 180 degrees and stitch together the images
         print("--> Stitching...")
-        self.find_and_stich_images()
+        self.find_and_stitch_images()
         print("--> Finished Stitching")
 
         # Do flat field correction for sli-0 and sli-180 for each possible range value
@@ -112,7 +112,7 @@ class AutoStitchFunctions:
             print("--> Directory " + self.parameters['temp_dir'] +
                   " already exists - select a different temp directory or delete the current one")
 
-    def find_and_stich_images(self):
+    def find_and_stitch_images(self):
         """
         Gets the images corresponding to 0 degrees and 180 degrees.
         In a dataset of 6000 images - we want 0 and 3000 stitched for 0 degrees - and 3001 and 6000 for 180 degrees
