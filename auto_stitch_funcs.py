@@ -228,10 +228,9 @@ class AutoStitchFunctions:
                 for num in range(self.overlap_range + 1):
                     image_0_path = os.path.join(temp_path, str(overlap_start + num) + "-sli-0.tif")
                     image_180_path = os.path.join(temp_path, str(overlap_start + num) + "-sli-180.tif")
-                    print(image_0_path)
-                    print(image_180_path)
                     subtracted_image_path = os.path.join(self.parameters['temp_dir'], ct_dir[0],
-                                                         zdir, "projections", "Sli-" + str(overlap_start + num))
+                                                         zdir, "projections",
+                                                         "sli-" + str(overlap_start + num) + ".tif")
                     print(subtracted_image_path)
 
     def print_parameters(self):
