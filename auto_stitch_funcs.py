@@ -269,6 +269,8 @@ class AutoStitchFunctions:
         # we pass index and formats as argument
         first = self.read_image(first_image_path)
         second = self.read_image(second_image_path)
+        # We flip the second image before stitching
+        second = np.fliplr(second)
         stitched = self.stitch(first, second, ax, crop)
         tifffile.imsave(out_fmt, stitched)
 
