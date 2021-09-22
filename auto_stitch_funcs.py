@@ -220,13 +220,14 @@ class AutoStitchFunctions:
         Subtract 180 degree image from the 0 degree image
         Save the images to the projections directory
         """
+        overlap_start = int(self.parameters['overlap_start'])
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
             for zdir in ct_dir[1]:
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range", "ffc")
                 for num in range(self.overlap_range + 1):
-                    image_0_path = os.path.join(temp_path, str(num) + "-sli-0.tif")
-                    image_180_path = os.path.join(temp_path, str(num) + "-sli-180.tif")
+                    image_0_path = os.path.join(temp_path, str(overlap_start + num) + "-sli-0.tif")
+                    image_180_path = os.path.join(temp_path, str(overlap_start + num) + "-sli-180.tif")
                     print(image_0_path)
                     print(image_180_path)
 
