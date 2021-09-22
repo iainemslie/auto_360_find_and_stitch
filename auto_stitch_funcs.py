@@ -85,7 +85,7 @@ class AutoStitchFunctions:
             for zdir in zdir_list:
                 if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
                     zdir_list.remove(zdir)
-            self.z_dirs[ct_dir] = zdir_list
+            self.z_dirs[ct_dir] = sorted(zdir_list)
 
     def create_temp_dir(self):
         """
@@ -185,7 +185,7 @@ class AutoStitchFunctions:
         """
         Get flats/darks/tomo paths in temp directory and call tofu flat correction
         """
-        ct_items = sorted(self.z_dirs.items())
+        ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
             print(ct_dir[0])
             for zdir in sorted(ct_dir[1]):
