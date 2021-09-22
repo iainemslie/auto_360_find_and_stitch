@@ -36,7 +36,7 @@ class AutoStitchFunctions:
 
         # Get the images at 0 degrees and 180 degrees and stitch together the images
         print("--> Stitching...")
-        self.find_and_stich_images()
+        #self.find_and_stich_images()
         print("--> Finished Stitching")
 
         # Do flat field correction for sli-0 and sli-180 for each possible range value
@@ -225,8 +225,8 @@ class AutoStitchFunctions:
             for zdir in ct_dir[1]:
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range", "ffc")
                 for num in range(self.overlap_range + 1):
-                    image_0_path = os.path.join(temp_path, num + "-sli-0.tif")
-                    image_180_path = os.path.join(temp_path, num + "-sli-180.tif")
+                    image_0_path = os.path.join(temp_path, str(num) + "-sli-0.tif")
+                    image_180_path = os.path.join(temp_path, str(num) + "-sli-180.tif")
                     print(image_0_path)
                     print(image_180_path)
 

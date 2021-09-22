@@ -89,7 +89,7 @@ class AutoStitchGUI(QWidget):
         working_dir = os.getcwd()
         self.input_entry.setText(working_dir)
         self.parameters['input_dir'] = working_dir
-        output_dir = working_dir + "/rec/horstitch"
+        output_dir = working_dir + "/rec/auto_horstitch"
         self.output_entry.setText(output_dir)
         self.parameters['output_dir'] = output_dir
         temp_dir = "/data/tmp-auto-stitch"
@@ -176,6 +176,7 @@ class AutoStitchGUI(QWidget):
         logging.debug("Stitch Button Pressed")
         self.auto_stitch_funcs = AutoStitchFunctions(self.parameters)
         self.auto_stitch_funcs.run_auto_stitch()
+        #TODO: fix this
         '''
         if not os.path.isdir(self.parameters['temp_dir']):
             self.auto_stitch_funcs.run_auto_stitch()
