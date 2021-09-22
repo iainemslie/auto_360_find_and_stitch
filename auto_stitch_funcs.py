@@ -240,7 +240,7 @@ class AutoStitchFunctions:
                     # Subtract flipped 180 degree image from 0 degree image
                     subtracted_image = np.subtract(flipped_180_image, image_0)
                     # Save the subtracted image
-                    tifffile.imwrite(subtracted_image_path, subtracted_image)
+                    tifffile.imwrite(subtracted_image_path, subtracted_image, np.float32)
 
 
     def print_parameters(self):
