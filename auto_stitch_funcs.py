@@ -115,7 +115,7 @@ class AutoStitchFunctions:
     def find_and_stitch_images(self):
         """
         Gets the images corresponding to 0 degrees and 180 degrees.
-        In a dataset of 6000 images - we want 0 and 3000 stitched for 0 degrees - and 3001 and 6000 for 180 degrees
+        In a dataset of 6000 images - we want 0 and 2999 stitched for 0 degrees - and 3000 and 5999 for 180 degrees
         Also gets the full list of flats/darks and stitches those in pairs
         """
         ct_items = self.z_dirs.items()
