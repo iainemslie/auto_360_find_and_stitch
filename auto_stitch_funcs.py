@@ -74,7 +74,7 @@ class AutoStitchFunctions:
                 ct_path, z_dir = os.path.split(path)
                 parent_path, ct_name = os.path.split(ct_path)
                 self.ct_list.append(ct_name)
-            self.ct_list = list(set(self.ct_list))
+            self.ct_list = sorted(list(set(self.ct_list)))
 
     def get_z_dirs(self):
         """
@@ -188,7 +188,7 @@ class AutoStitchFunctions:
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
             print(ct_dir[0])
-            for zdir in sorted(ct_dir[1]):
+            for zdir in ct_dir[1]:
                 print("-->" + zdir)
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range")
                 range_list = os.listdir(temp_path)
@@ -220,9 +220,9 @@ class AutoStitchFunctions:
         Subtract 180 degree image from the 0 degree image
         Save the images to the projections directory
         """
-        ct_items = sorted(self.z_dirs.items())
+        ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
-            for zdir in sorted(ct_dir[1]):
+            for zdir in ct_dir[1]:
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range", "ffc")
                 ffc_files = sorted(os.listdir(temp_path))
                 print(ffc_files)
