@@ -231,7 +231,10 @@ class AutoStitchFunctions:
                     subtracted_image_path = os.path.join(self.parameters['temp_dir'], ct_dir[0],
                                                          zdir, "projections",
                                                          "sli-" + str(overlap_start + num) + ".tif")
-                    print(subtracted_image_path)
+                    image_0 = tifffile.imread(image_0_path)
+                    image_180 = tifffile.imread(image_180_path)
+                    print(type(image_0))
+                    print(type(image_180))
 
     def print_parameters(self):
         """
