@@ -128,11 +128,10 @@ class AutoStitchFunctions:
                     num_images = len(image_list)
                     # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
                     first_zero_degree_image = image_list[0]
-                    second_zero_degree_image = image_list[int(num_images/2)]
-                    first_180_degree_image = image_list[int((num_images/2)+1)]
+                    second_zero_degree_image = image_list[int(num_images/2)-1]
+                    first_180_degree_image = image_list[int((num_images/2))]
                     second_180_degree_image = image_list[num_images-1]
                     # Get absolute paths for these images
-
                     first_zero_degree_image_path = os.path.join(tmp_path, first_zero_degree_image)
                     second_zero_degree_image_path = os.path.join(tmp_path, second_zero_degree_image)
                     first_180_degree_image_path = os.path.join(tmp_path, first_180_degree_image)
