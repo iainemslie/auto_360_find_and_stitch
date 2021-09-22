@@ -41,7 +41,7 @@ class AutoStitchFunctions:
 
         # Do flat field correction for sli-0 and sli-180 for each possible range value
         print("--> Begin Flat Field Correction...")
-        self.flat_field_correction()
+        #self.flat_field_correction()
         print("--> Finished Flat Field Correction")
 
         # For each overlap range value - subtract the 0 degree and 180 degree images - save in projections
@@ -224,8 +224,11 @@ class AutoStitchFunctions:
         for ct_dir in ct_items:
             for zdir in ct_dir[1]:
                 temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range", "ffc")
-                ffc_files = sorted(os.listdir(temp_path))
-                print(ffc_files)
+                for num in range(self.overlap_range + 1):
+                    image_0_path = os.path.join(temp_path, num + "-sli-0.tif")
+                    image_180_path = os.path.join(temp_path, num + "-sli-180.tif")
+                    print(image_0_path)
+                    print(image_180_path)
 
     def print_parameters(self):
         """
