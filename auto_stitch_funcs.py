@@ -36,12 +36,12 @@ class AutoStitchFunctions:
 
         # Get the images at 0 degrees and 180 degrees and stitch together the images
         print("--> Stitching...")
-        #self.find_and_stich_images()
+        self.find_and_stich_images()
         print("--> Finished Stitching")
 
         # Do flat field correction for sli-0 and sli-180 for each possible range value
         print("--> Begin Flat Field Correction...")
-        #self.flat_field_correction()
+        self.flat_field_correction()
         print("--> Finished Flat Field Correction")
 
         # For each overlap range value - subtract the 0 degree and 180 degree images - save in projections
@@ -100,7 +100,7 @@ class AutoStitchFunctions:
             for ct_dir in ct_items:
                 os.makedirs(os.path.join(self.parameters['temp_dir'], ct_dir[0]))
                 for z_dir in ct_dir[1]:
-                    os.makedirs(os.path.join(self.parameters['temp_dir'], ct_dir[0], z_dir, "projection"))
+                    os.makedirs(os.path.join(self.parameters['temp_dir'], ct_dir[0], z_dir, "projections"))
                     os.makedirs(os.path.join(self.parameters['temp_dir'], ct_dir[0], z_dir, "range"))
                     for num in range(self.overlap_range + 1):
                         tmp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0],
@@ -240,7 +240,7 @@ class AutoStitchFunctions:
                     # Subtract flipped 180 degree image from 0 degree image
                     subtracted_image = np.subtract(flipped_180_image, image_0)
                     # Save the subtracted image
-                    tifffile.imwrite(subtracted_image_path, subtracted_image, np.float32)
+                    tifffile.imwrite(subtracted_image_path, subtracted_image)
 
 
     def print_parameters(self):

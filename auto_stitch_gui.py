@@ -176,13 +176,11 @@ class AutoStitchGUI(QWidget):
         logging.debug("Stitch Button Pressed")
         self.auto_stitch_funcs = AutoStitchFunctions(self.parameters)
         self.auto_stitch_funcs.run_auto_stitch()
-        #TODO: fix this
-        '''
         if not os.path.isdir(self.parameters['temp_dir']):
             self.auto_stitch_funcs.run_auto_stitch()
         else:
             print("--> Temp Directory Exists - Delete Before Proceeding")
-        '''
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
