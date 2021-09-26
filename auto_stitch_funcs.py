@@ -45,8 +45,15 @@ class AutoStitchFunctions:
         print("--> Finished Flat Field Correction")
 
         # For each overlap range value - subtract the 0 degree and 180 degree images - save in projections
-        print("--> Subtracting images")
-        self.subtract_images()
+        #print("--> Subtracting images")
+        #self.subtract_images()
+
+        # For each zview
+            # For each value in overlap range
+                # Apply the fftconvolve to 0 degree and flipped 180 degree image
+                    # For each resulting convolved array
+                        # Find the argmax of all values across all the arrays
+                        # This is the centre of rotation
 
         # Use tofu gui method to find center of rotation without ffc
 
@@ -240,7 +247,6 @@ class AutoStitchFunctions:
                     subtracted_image = np.subtract(flipped_180_image, image_0)
                     # Save the subtracted image
                     tifffile.imwrite(subtracted_image_path, subtracted_image)
-
 
     def print_parameters(self):
         """
