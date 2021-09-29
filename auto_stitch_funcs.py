@@ -31,33 +31,10 @@ class AutoStitchFunctions:
         self.get_z_dirs()
         print(self.z_dirs)
 
-        # Create the temp directory and internal structure
-        self.create_temp_dir()
+        # Flat correct images but don't save to directory
 
-        # Get the images at 0 degrees and 180 degrees and stitch together the images
-        print("--> Stitching...")
-        self.find_and_stitch_images()
-        print("--> Finished Stitching")
+        # Feed images 0 - 2999 ... 3000 - 5999 for 6000 images into fftconvolve
 
-        # Do flat field correction for sli-0 and sli-180 for each possible range value
-        print("--> Begin Flat Field Correction...")
-        self.flat_field_correction()
-        print("--> Finished Flat Field Correction")
-
-        # For each overlap range value - subtract the 0 degree and 180 degree images - save in projections
-        #print("--> Subtracting images")
-        #self.subtract_images()
-
-        # For each zview
-            # For each value in overlap range
-                # Apply the fftconvolve to 0 degree and flipped 180 degree image
-                    # For each resulting convolved array
-                        # Find the argmax of all values across all the arrays
-                        # This is the centre of rotation
-
-        # Use tofu gui method to find center of rotation without ffc
-
-        # Do horizontal stitching using horizontal overlap found in previous step
 
     def find_ct_dirs(self):
         """
@@ -94,6 +71,7 @@ class AutoStitchFunctions:
                     zdir_list.remove(zdir)
             self.z_dirs[ct_dir] = sorted(zdir_list)
 
+    '''
     def create_temp_dir(self):
         """
         Creates the temp directory and its subdirectories
@@ -247,6 +225,7 @@ class AutoStitchFunctions:
                     subtracted_image = np.subtract(flipped_180_image, image_0)
                     # Save the subtracted image
                     tifffile.imwrite(subtracted_image_path, subtracted_image)
+    '''
 
     def print_parameters(self):
         """
@@ -258,8 +237,7 @@ class AutoStitchFunctions:
         print("Input Directory: " + self.parameters['input_dir'])
         print("Output Directory: " + self.parameters['output_dir'])
         print("Temp Directory: " + self.parameters['temp_dir'])
-        print("Overlap Start: " + self.parameters['overlap_start'])
-        print("Overlap End: " + self.parameters['overlap_end'])
+        print("Overlap Region Size: " + self.parameters['overlap_region'])
         print("Number of Steps: " + self.parameters['steps'])
         print("Axis on left: " + self.parameters['axis_on_left'])
         print("============================================================")
@@ -270,16 +248,17 @@ class AutoStitchFunctions:
         """Read tiff file from disk by :py:mod:`tifffile` module."""
         with tifffile.TiffFile(file_name) as f:
             return f.asarray(out='memmap')
-
+    '''
     def open_images_and_stitch(self, ax, crop, first_image_path, second_image_path, out_fmt):
-        # we pass index and formats as argument
+        # We pass index and formats as argument
         first = self.read_image(first_image_path)
         second = self.read_image(second_image_path)
         # We flip the second image before stitching
         second = np.fliplr(second)
         stitched = self.stitch(first, second, ax, crop)
         tifffile.imsave(out_fmt, stitched)
-
+    '''
+    '''
     def stitch(self, first, second, axis, crop):
         h, w = first.shape
         if axis > w / 2:
@@ -302,3 +281,4 @@ class AutoStitchFunctions:
         result[:, w:] = second[:, dx:]
 
         return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
+    '''

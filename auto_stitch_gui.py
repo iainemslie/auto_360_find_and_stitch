@@ -35,13 +35,9 @@ class AutoStitchGUI(QWidget):
         self.temp_entry = QLineEdit()
         self.temp_entry.textChanged.connect(self.set_temp_entry)
 
-        self.overlap_start_label = QLabel("Starting horizontal overlap")
-        self.overlap_start_entry = QLineEdit()
-        self.overlap_start_entry.textChanged.connect(self.set_overlap_start_entry)
-
-        self.overlap_end_label = QLabel("Ending horizontal overlap")
-        self.overlap_end_entry = QLineEdit()
-        self.overlap_end_entry.textChanged.connect(self.set_overlap_end_entry)
+        self.overlap_region_label = QLabel("Overlap Region Size")
+        self.overlap_region_entry = QLineEdit()
+        self.overlap_region_entry.textChanged.connect(self.set_overlap_region_entry)
 
         self.steps_label = QLabel("Number of steps")
         self.steps_entry = QLineEdit()
@@ -73,12 +69,10 @@ class AutoStitchGUI(QWidget):
         layout.addWidget(self.output_entry, 1, 2, 1, 4)
         layout.addWidget(self.temp_button, 2, 0, 1, 2)
         layout.addWidget(self.temp_entry, 2, 2, 1, 4)
-        layout.addWidget(self.overlap_start_label, 3, 0)
-        layout.addWidget(self.overlap_start_entry, 3, 1)
-        layout.addWidget(self.overlap_end_label, 3, 2)
-        layout.addWidget(self.overlap_end_entry, 3, 3)
-        layout.addWidget(self.steps_label, 3, 4)
-        layout.addWidget(self.steps_entry, 3, 5)
+        layout.addWidget(self.overlap_region_label, 3, 0)
+        layout.addWidget(self.overlap_region_entry, 3, 1)
+        layout.addWidget(self.steps_label, 3, 2)
+        layout.addWidget(self.steps_entry, 3, 3)
         layout.addWidget(self.left_hand_checkbox, 4, 0, 1, 4)
         layout.addWidget(self.help_button, 5, 0, 1, 2)
         layout.addWidget(self.delete_temp_button, 5, 2, 1, 1)
@@ -95,10 +89,8 @@ class AutoStitchGUI(QWidget):
         temp_dir = "/data/tmp-auto-stitch"
         self.temp_entry.setText(temp_dir)
         self.parameters['temp_dir'] = temp_dir
-        self.overlap_start_entry.setText("720")
-        self.parameters['overlap_start'] = "720"
-        self.overlap_end_entry.setText("735")
-        self.parameters['overlap_end'] = "735"
+        self.overlap_region_entry.setText("770")
+        self.parameters['overlap_region'] = "770"
         self.steps_entry.setText("1")
         self.parameters['steps'] = "1"
         self.left_hand_checkbox.setChecked(False)
@@ -139,13 +131,9 @@ class AutoStitchGUI(QWidget):
         logging.debug("Temp Entry: " + str(self.temp_entry.text()))
         self.parameters['temp_dir'] = str(self.temp_entry.text())
 
-    def set_overlap_start_entry(self):
-        logging.debug("Overlap Start: " + str(self.overlap_start_entry.text()))
-        self.parameters['overlap_start'] = str(self.overlap_start_entry.text())
-
-    def set_overlap_end_entry(self):
-        logging.debug("Overlap End: " + str(self.overlap_end_entry.text()))
-        self.parameters['overlap_end'] = str(self.overlap_end_entry.text())
+    def set_overlap_region_entry(self):
+        logging.debug("Overlap Region: " + str(self.overlap_region_entry.text()))
+        self.parameters['overlap_region'] = str(self.overlap_region_entry.text())
 
     def set_steps_entry(self):
         logging.debug("Steps: " + str(self.steps_entry.text()))
