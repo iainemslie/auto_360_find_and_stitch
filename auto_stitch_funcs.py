@@ -83,8 +83,9 @@ class AutoStitchFunctions:
                     # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
                     zero_degree_image_name = image_list[0]
                     one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
-                    #first_180_degree_image_name = image_list[int((num_images / 2))]
-                    #second_180_degree_image_name = image_list[num_images - 1]
+
+                    print(tmp_path + zero_degree_image_name)
+                    print(tmp_path + one_eighty_degree_image_name)
 
 
 
