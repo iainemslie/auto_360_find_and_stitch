@@ -123,7 +123,7 @@ class AutoStitchFunctions:
 
         axis = self.compute_rotation_axis(first, second)
 
-        print("axis: " + axis)
+        print(axis)
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
