@@ -30,10 +30,10 @@ class AutoStitchFunctions:
         self.get_z_dirs()
         print(self.z_dirs)
 
-        # Flat correct images but don't save to directory
-        self.find_images()
+        # Find 0 and 180 degree pairs and compute the centre
+        self.find_images_and_compute_centre()
 
-        # Feed first and last images into fftconvolve
+
 
 
     def find_ct_dirs(self):
@@ -84,13 +84,32 @@ class AutoStitchFunctions:
                     zero_degree_image_name = image_list[0]
                     one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
 
+                    print("--> " + str(zdir))
                     print(tmp_path + zero_degree_image_name)
                     print(tmp_path + one_eighty_degree_image_name)
 
+                    zero_degree_image_path = tmp_path + zero_degree_image_name
+                    one_eighty_degree_image_path = tmp_path + one_eighty_degree_image_name
+
+                    self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
 
 
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
+
+    def compute_centre(self, zero_degree_image_path, one_eighty_degree_image_path):
+        # Read each image into a numpy array
+        with tifffile.TiffFile(zero_degree_image_path) as tif:
+            first = tif.pages[0].asarray().astype(np.float)
+        with tifffile.TiffFile(one_eighty_degree_image_path) as tif:
+            second = tif.pages[-1].asarray().astype(np.float)
+
+        # Do flat field correction on the images
+        flat_files = sorted(os.listdir(self.parameters['flats_dir']))
+        dark_files = sorted(os.listdir(self.parameters['darks_dir']))
+
+        print(flat_files)
+        print(dark_files)
 
     '''
     def create_temp_dir(self):
