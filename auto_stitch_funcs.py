@@ -74,7 +74,7 @@ class AutoStitchFunctions:
         except FileNotFoundError:
             print("File Not Found Error")
 
-    def find_images(self):
+    def find_images_and_compute_centre(self):
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
             for zdir in ct_dir[1]:
