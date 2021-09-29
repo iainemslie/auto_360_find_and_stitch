@@ -35,6 +35,16 @@ class AutoStitchGUI(QWidget):
         self.temp_entry = QLineEdit()
         self.temp_entry.textChanged.connect(self.set_temp_entry)
 
+        self.flats_button = QPushButton("Select Flats Path")
+        self.flats_button.clicked.connect(self.flats_button_pressed)
+        self.flats_entry = QLineEdit()
+        self.flats_entry.textChanged.connect(self.set_flats_entry)
+
+        self.darks_button = QPushButton("Select Darks Path")
+        self.darks_button.clicked.connect(self.darks_button_pressed)
+        self.darks_entry = QLineEdit()
+        self.darks_entry.textChanged.connect(self.set_darks_entry)
+
         self.overlap_region_label = QLabel("Overlap Region Size")
         self.overlap_region_entry = QLineEdit()
         self.overlap_region_entry.textChanged.connect(self.set_overlap_region_entry)
@@ -69,26 +79,30 @@ class AutoStitchGUI(QWidget):
         layout.addWidget(self.output_entry, 1, 2, 1, 4)
         layout.addWidget(self.temp_button, 2, 0, 1, 2)
         layout.addWidget(self.temp_entry, 2, 2, 1, 4)
-        layout.addWidget(self.overlap_region_label, 3, 0)
-        layout.addWidget(self.overlap_region_entry, 3, 1)
-        layout.addWidget(self.steps_label, 3, 2)
-        layout.addWidget(self.steps_entry, 3, 3)
-        layout.addWidget(self.left_hand_checkbox, 4, 0, 1, 4)
-        layout.addWidget(self.help_button, 5, 0, 1, 2)
-        layout.addWidget(self.delete_temp_button, 5, 2, 1, 1)
-        layout.addWidget(self.stitch_button, 5, 3, 1, 3)
+        layout.addWidget(self.flats_button, 3, 0, 1, 2)
+        layout.addWidget(self.flats_entry, 3, 2, 1, 4)
+        layout.addWidget(self.darks_button, 4, 0, 1, 2)
+        layout.addWidget(self.darks_entry, 4, 2, 1, 4)
+        layout.addWidget(self.overlap_region_label, 5, 0)
+        layout.addWidget(self.overlap_region_entry, 5, 1)
+        layout.addWidget(self.steps_label, 5, 2)
+        layout.addWidget(self.steps_entry, 5, 3)
+        layout.addWidget(self.left_hand_checkbox, 6, 0, 1, 4)
+        layout.addWidget(self.help_button, 7, 0, 1, 2)
+        layout.addWidget(self.delete_temp_button, 7, 2, 1, 1)
+        layout.addWidget(self.stitch_button, 7, 3, 1, 3)
         self.setLayout(layout)
 
     def init_values(self):
-        working_dir = "...enter input directory"
-        self.input_entry.setText(working_dir)
-        self.parameters['input_dir'] = working_dir
-        output_dir = "...enter output directory"
-        self.output_entry.setText(output_dir)
-        self.parameters['output_dir'] = output_dir
+        self.input_entry.setText("...enter input directory")
+        self.output_entry.setText("...enter output directory")
         temp_dir = "/data/tmp-auto-stitch"
         self.temp_entry.setText(temp_dir)
         self.parameters['temp_dir'] = temp_dir
+        self.flats_entry.setText("...enter flats directory")
+        self.parameters['flats_dir'] = ""
+        self.darks_entry.setText("...enter darks directory")
+        self.parameters['darks_dir'] = ""
         self.overlap_region_entry.setText("770")
         self.parameters['overlap_region'] = "770"
         self.steps_entry.setText("1")
@@ -128,6 +142,28 @@ class AutoStitchGUI(QWidget):
     def set_temp_entry(self):
         logging.debug("Temp Entry: " + str(self.temp_entry.text()))
         self.parameters['temp_dir'] = str(self.temp_entry.text())
+
+    def flats_button_pressed(self):
+        logging.debug("Flats Button Pressed")
+        dir_explore = QFileDialog(self)
+        flats_dir = dir_explore.getExistingDirectory()
+        self.flats_entry.setText(flats_dir)
+        self.parameters['flats_dir'] = flats_dir
+
+    def set_flats_entry(self):
+        logging.debug("Flats Entry: " + str(self.flats_entry.text()))
+        self.parameters['flats_dir'] = str(self.flats_entry.text())
+
+    def darks_button_pressed(self):
+        logging.debug("Darks Button Pressed")
+        dir_explore = QFileDialog(self)
+        darks_dir = dir_explore.getExistingDirectory()
+        self.darks_entry.setText(darks_dir)
+        self.parameters['darks_dir'] = darks_dir
+
+    def set_darks_entry(self):
+        logging.debug("Darks Entry: " + str(self.darks_entry.text()))
+        self.parameters['darks_dir'] = str(self.darks_entry.text())
 
     def set_overlap_region_entry(self):
         logging.debug("Overlap Region: " + str(self.overlap_region_entry.text()))

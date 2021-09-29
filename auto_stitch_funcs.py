@@ -81,11 +81,12 @@ class AutoStitchFunctions:
                     image_list = sorted(os.listdir(tmp_path))
                     num_images = len(image_list)
                     # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
-                    first_zero_degree_image_path = image_list[0]
-                    second_zero_degree_image_path = image_list[int(num_images / 2) - 1]
-                    first_180_degree_image_path = image_list[int((num_images / 2))]
-                    second_180_degree_image_path = image_list[num_images - 1]
-                    print(first_180_degree_image_path)
+                    zero_degree_image_name = image_list[0]
+                    one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
+                    #first_180_degree_image_name = image_list[int((num_images / 2))]
+                    #second_180_degree_image_name = image_list[num_images - 1]
+
+
 
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
@@ -256,6 +257,8 @@ class AutoStitchFunctions:
         print("Input Directory: " + self.parameters['input_dir'])
         print("Output Directory: " + self.parameters['output_dir'])
         print("Temp Directory: " + self.parameters['temp_dir'])
+        print("Flats Directory: " + self.parameters['flats_dir'])
+        print("Darks Directory: " + self.parameters['darks_dir'])
         print("Overlap Region Size: " + self.parameters['overlap_region'])
         print("Number of Steps: " + self.parameters['steps'])
         print("Axis on left: " + self.parameters['axis_on_left'])
