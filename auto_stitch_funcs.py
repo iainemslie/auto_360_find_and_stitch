@@ -109,11 +109,16 @@ class AutoStitchFunctions:
         # Do flat field correction on the images
         flat_files = self.get_filtered_filenames(self.parameters['flats_dir'])
         dark_files = self.get_filtered_filenames(self.parameters['darks_dir'])
+        flats = np.array([tifffile.TiffFile(x).asarray().astype(np.float) for x in flat_files])
+        darks = np.array([tifffile.TiffFile(x).asarray().astype(np.float) for x in dark_files])
+        dark = np.mean(darks, axis=0)
+        flat = np.mean(flats, axis=0) - dark
+        first = (first - dark) / flat
+        second = (second - dark) / flat
 
-        print("flats: " + str(flat_files))
-        print("darks: " + str(dark_files))
+        axis = self.compute_rotation_axis(first, second)
 
-
+        print(axis)
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
@@ -125,6 +130,91 @@ class AutoStitchFunctions:
             return []
 
         return sorted(result)
+
+    def compute_rotation_axis(self, first_projection, last_projection):
+        """
+        Compute the tomographic rotation axis based on cross-correlation technique.
+        *first_projection* is the projection at 0 deg, *last_projection* is the projection
+        at 180 deg.
+        """
+        from scipy.signal import fftconvolve
+        width = first_projection.shape[1]
+        first_projection = first_projection - first_projection.mean()
+        last_projection = last_projection - last_projection.mean()
+
+        # The rotation by 180 deg flips the image horizontally, in order
+        # to do cross-correlation by convolution we must also flip it
+        # vertically, so the image is transposed and we can apply convolution
+        # which will act as cross-correlation
+        convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
+        center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
+
+        return (width / 2.0 + center) / 2
+
+    def print_parameters(self):
+        """
+        Prints parameter values with line formatting
+        """
+        print()
+        print("**************************** Running Auto Stitch ****************************")
+        print("======================== Parameters ========================")
+        print("Input Directory: " + self.parameters['input_dir'])
+        print("Output Directory: " + self.parameters['output_dir'])
+        print("Temp Directory: " + self.parameters['temp_dir'])
+        print("Flats Directory: " + self.parameters['flats_dir'])
+        print("Darks Directory: " + self.parameters['darks_dir'])
+        print("Overlap Region Size: " + self.parameters['overlap_region'])
+        print("Number of Steps: " + self.parameters['steps'])
+        print("Axis on left: " + self.parameters['axis_on_left'])
+        print("============================================================")
+
+    """****** BORROWED FUNCTIONS ******"""
+
+    def read_image(self, file_name):
+        """Read tiff file from disk by :py:mod:`tifffile` module."""
+        with tifffile.TiffFile(file_name) as f:
+            return f.asarray(out='memmap')
+
+
+
+
+
+    '''
+    def open_images_and_stitch(self, ax, crop, first_image_path, second_image_path, out_fmt):
+        # We pass index and formats as argument
+        first = self.read_image(first_image_path)
+        second = self.read_image(second_image_path)
+        # We flip the second image before stitching
+        second = np.fliplr(second)
+        stitched = self.stitch(first, second, ax, crop)
+        tifffile.imsave(out_fmt, stitched)
+    '''
+    '''
+    def stitch(self, first, second, axis, crop):
+        h, w = first.shape
+        if axis > w / 2:
+            dx = int(2 * (w - axis) + 0.5)
+        else:
+            dx = int(2 * axis + 0.5)
+            tmp = np.copy(first)
+            first = second
+            second = tmp
+        result = np.empty((h, 2 * w - dx), dtype=first.dtype)
+        ramp = np.linspace(0, 1, dx)
+
+        # Mean values of the overlapping regions must match, which corrects flat-field inconsistency
+        # between the two projections
+        k = np.mean(first[:, w - dx:]) / np.mean(second[:, :dx])
+        second = second * k
+
+        result[:, :w - dx] = first[:, :w - dx]
+        result[:, w - dx:w] = first[:, w - dx:] * (1 - ramp) + second[:, :dx] * ramp
+        result[:, w:] = second[:, dx:]
+
+        return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
+    '''
+
+
 
     '''
     def create_temp_dir(self):
@@ -280,63 +370,4 @@ class AutoStitchFunctions:
                     subtracted_image = np.subtract(flipped_180_image, image_0)
                     # Save the subtracted image
                     tifffile.imwrite(subtracted_image_path, subtracted_image)
-    '''
-
-    def print_parameters(self):
-        """
-        Prints parameter values with line formatting
-        """
-        print()
-        print("**************************** Running Auto Stitch ****************************")
-        print("======================== Parameters ========================")
-        print("Input Directory: " + self.parameters['input_dir'])
-        print("Output Directory: " + self.parameters['output_dir'])
-        print("Temp Directory: " + self.parameters['temp_dir'])
-        print("Flats Directory: " + self.parameters['flats_dir'])
-        print("Darks Directory: " + self.parameters['darks_dir'])
-        print("Overlap Region Size: " + self.parameters['overlap_region'])
-        print("Number of Steps: " + self.parameters['steps'])
-        print("Axis on left: " + self.parameters['axis_on_left'])
-        print("============================================================")
-
-    """****** BORROWED FUNCTIONS ******"""
-
-    def read_image(self, file_name):
-        """Read tiff file from disk by :py:mod:`tifffile` module."""
-        with tifffile.TiffFile(file_name) as f:
-            return f.asarray(out='memmap')
-
-    '''
-    def open_images_and_stitch(self, ax, crop, first_image_path, second_image_path, out_fmt):
-        # We pass index and formats as argument
-        first = self.read_image(first_image_path)
-        second = self.read_image(second_image_path)
-        # We flip the second image before stitching
-        second = np.fliplr(second)
-        stitched = self.stitch(first, second, ax, crop)
-        tifffile.imsave(out_fmt, stitched)
-    '''
-    '''
-    def stitch(self, first, second, axis, crop):
-        h, w = first.shape
-        if axis > w / 2:
-            dx = int(2 * (w - axis) + 0.5)
-        else:
-            dx = int(2 * axis + 0.5)
-            tmp = np.copy(first)
-            first = second
-            second = tmp
-        result = np.empty((h, 2 * w - dx), dtype=first.dtype)
-        ramp = np.linspace(0, 1, dx)
-
-        # Mean values of the overlapping regions must match, which corrects flat-field inconsistency
-        # between the two projections
-        k = np.mean(first[:, w - dx:]) / np.mean(second[:, :dx])
-        second = second * k
-
-        result[:, :w - dx] = first[:, :w - dx]
-        result[:, w - dx:w] = first[:, w - dx:] * (1 - ramp) + second[:, :dx] * ramp
-        result[:, w:] = second[:, dx:]
-
-        return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
     '''
