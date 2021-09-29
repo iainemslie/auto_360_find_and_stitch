@@ -102,8 +102,8 @@ class AutoStitchGUI(QWidget):
         input_dir = dir_explore.getExistingDirectory()
         self.input_entry.setText(input_dir)
         self.parameters['input_dir'] = input_dir
-        self.output_entry.setText(input_dir + "/rec/auto_horstitch")
-        self.parameters['output_dir'] = input_dir + "/rec/auto_horstitch"
+        #self.output_entry.setText(input_dir + "/rec/auto_horstitch")
+        #self.parameters['output_dir'] = input_dir + "/rec/auto_horstitch"
 
     def set_input_entry(self):
         logging.debug("Input Entry: " + str(self.input_entry.text()))
