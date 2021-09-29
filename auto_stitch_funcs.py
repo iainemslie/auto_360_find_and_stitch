@@ -80,7 +80,7 @@ class AutoStitchFunctions:
                     tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
                     image_list = sorted(os.listdir(tmp_path))
                     num_images = len(image_list)
-                    print("-> Found " + num_images + " images")
+                    print("-> Found " + str(num_images) + " images")
                     # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
                     first_zero_degree_image = image_list[0]
                     second_zero_degree_image = image_list[int(num_images / 2) - 1]
