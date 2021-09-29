@@ -64,12 +64,15 @@ class AutoStitchFunctions:
         """
         Creates a dictionary where each key is a CTDir and its value is a list of its subdirectories
         """
-        for ct_dir in self.ct_list:
-            zdir_list = os.listdir(self.parameters['input_dir'] + "/" + ct_dir)
-            for zdir in zdir_list:
-                if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
-                    zdir_list.remove(zdir)
-            self.z_dirs[ct_dir] = sorted(zdir_list)
+        try:
+            for ct_dir in self.ct_list:
+                zdir_list = os.listdir(self.parameters['input_dir'] + "/" + ct_dir)
+                for zdir in zdir_list:
+                    if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
+                        zdir_list.remove(zdir)
+                self.z_dirs[ct_dir] = sorted(zdir_list)
+        except FileNotFoundError:
+            print("File Not Found Error")
 
     def find_images(self):
         ct_items = self.z_dirs.items()
