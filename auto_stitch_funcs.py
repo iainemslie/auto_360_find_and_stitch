@@ -10,7 +10,6 @@ class AutoStitchFunctions:
         self.ct_dirs = []
         self.ct_list = []
         self.z_dirs = {}
-        self.overlap_range = int(parameters['overlap_end']) - int(parameters['overlap_start'])
         self.parameters = parameters
 
     def run_auto_stitch(self):
@@ -248,6 +247,7 @@ class AutoStitchFunctions:
         """Read tiff file from disk by :py:mod:`tifffile` module."""
         with tifffile.TiffFile(file_name) as f:
             return f.asarray(out='memmap')
+
     '''
     def open_images_and_stitch(self, ax, crop, first_image_path, second_image_path, out_fmt):
         # We pass index and formats as argument
