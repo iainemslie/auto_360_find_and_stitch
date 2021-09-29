@@ -80,7 +80,7 @@ class AutoStitchGUI(QWidget):
         self.setLayout(layout)
 
     def init_values(self):
-        working_dir = os.getcwd()
+        working_dir = "...enter input directory"
         self.input_entry.setText(working_dir)
         self.parameters['input_dir'] = working_dir
         output_dir = "...enter output directory"
