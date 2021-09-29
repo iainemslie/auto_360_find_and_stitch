@@ -31,8 +31,9 @@ class AutoStitchFunctions:
         print(self.z_dirs)
 
         # Flat correct images but don't save to directory
+        self.find_images()
 
-        # Feed images 0 - 2999 ... 3000 - 5999 for 6000 images into fftconvolve
+        # Feed first and last images into fftconvolve
 
 
     def find_ct_dirs(self):
@@ -69,6 +70,25 @@ class AutoStitchFunctions:
                 if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
                     zdir_list.remove(zdir)
             self.z_dirs[ct_dir] = sorted(zdir_list)
+
+    def find_images(self):
+        ct_items = self.z_dirs.items()
+        for ct_dir in ct_items:
+            for zdir in ct_dir[1]:
+                # Get list of image names in the directory
+                try:
+                    tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
+                    image_list = sorted(os.listdir(tmp_path))
+                    num_images = len(image_list)
+                    print("-> Found " + num_images + " images")
+                    # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
+                    first_zero_degree_image = image_list[0]
+                    second_zero_degree_image = image_list[int(num_images / 2) - 1]
+                    first_180_degree_image = image_list[int((num_images / 2))]
+                    second_180_degree_image = image_list[num_images - 1]
+
+                except NotADirectoryError:
+                    print("Skipped - Not a Directory: " + tmp_path)
 
     '''
     def create_temp_dir(self):
