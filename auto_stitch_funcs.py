@@ -110,8 +110,8 @@ class AutoStitchFunctions:
         flat_files = sorted(os.listdir(self.parameters['flats_dir']))
         dark_files = sorted(os.listdir(self.parameters['darks_dir']))
 
-        print("flats: " + flat_files)
-        print("darks: " + dark_files)
+        print("flats: " + str(flat_files))
+        print("darks: " + str(dark_files))
 
     '''
     def create_temp_dir(self):
