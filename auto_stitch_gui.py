@@ -83,7 +83,7 @@ class AutoStitchGUI(QWidget):
         working_dir = os.getcwd()
         self.input_entry.setText(working_dir)
         self.parameters['input_dir'] = working_dir
-        output_dir = working_dir + "...enter output directory"
+        output_dir = "...enter output directory"
         self.output_entry.setText(output_dir)
         self.parameters['output_dir'] = output_dir
         temp_dir = "/data/tmp-auto-stitch"
