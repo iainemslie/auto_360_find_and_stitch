@@ -107,11 +107,24 @@ class AutoStitchFunctions:
             second = tif.pages[-1].asarray().astype(np.float)
 
         # Do flat field correction on the images
-        flat_files = sorted(os.listdir(self.parameters['flats_dir']))
-        dark_files = sorted(os.listdir(self.parameters['darks_dir']))
+        flat_files = self.get_filtered_filenames(self.parameters['flats_dir'])
+        dark_files = self.get_filtered_filenames(self.parameters['darks_dir'])
 
         print("flats: " + str(flat_files))
         print("darks: " + str(dark_files))
+
+
+
+    def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
+        result = []
+
+        try:
+            for ext in exts:
+                result += [os.path.join(path, f) for f in os.listdir(path) if f.endswith(ext)]
+        except OSError:
+            return []
+
+        return sorted(result)
 
     '''
     def create_temp_dir(self):
