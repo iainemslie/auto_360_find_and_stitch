@@ -100,7 +100,7 @@ class AutoStitchFunctions:
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
 
-    def compute_centre(self, zero_degree_image_path, one_eighty_degree_image_path):
+    def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
         # Read each image into a numpy array
         with tifffile.TiffFile(zero_degree_image_path) as tif:
             first = tif.pages[0].asarray().astype(np.float)
