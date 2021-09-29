@@ -87,15 +87,14 @@ class AutoStitchFunctions:
                     zero_degree_image_name = image_list[0]
                     one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
 
-                    print("--> " + str(zdir))
-                    print(tmp_path + zero_degree_image_name)
-                    print(tmp_path + one_eighty_degree_image_name)
-
                     zero_degree_image_path = os.path.join(tmp_path, zero_degree_image_name)
                     one_eighty_degree_image_path = os.path.join(tmp_path, one_eighty_degree_image_name)
 
-                    self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
+                    print("--> " + str(zdir))
+                    print(zero_degree_image_path)
+                    print(one_eighty_degree_image_path)
 
+                    self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
 
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
@@ -111,8 +110,8 @@ class AutoStitchFunctions:
         flat_files = sorted(os.listdir(self.parameters['flats_dir']))
         dark_files = sorted(os.listdir(self.parameters['darks_dir']))
 
-        print(flat_files)
-        print(dark_files)
+        print("flats: " + flat_files)
+        print("darks: " + dark_files)
 
     '''
     def create_temp_dir(self):
