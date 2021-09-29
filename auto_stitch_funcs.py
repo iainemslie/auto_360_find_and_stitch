@@ -91,8 +91,8 @@ class AutoStitchFunctions:
                     print(tmp_path + zero_degree_image_name)
                     print(tmp_path + one_eighty_degree_image_name)
 
-                    zero_degree_image_path = tmp_path + zero_degree_image_name
-                    one_eighty_degree_image_path = tmp_path + one_eighty_degree_image_name
+                    zero_degree_image_path = os.path.join(tmp_path, zero_degree_image_name)
+                    one_eighty_degree_image_path = os.path.join(tmp_path, one_eighty_degree_image_name)
 
                     self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
 
