@@ -197,7 +197,6 @@ class AutoStitchGUI(QWidget):
     def stitch_button_pressed(self):
         logging.debug("Stitch Button Pressed")
         self.auto_stitch_funcs = AutoStitchFunctions(self.parameters)
-        self.auto_stitch_funcs.run_auto_stitch()
         if not os.path.isdir(self.parameters['temp_dir']):
             self.auto_stitch_funcs.run_auto_stitch()
         else:
