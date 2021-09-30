@@ -124,6 +124,7 @@ class AutoStitchFunctions:
 
         axis = self.compute_rotation_axis(first_cropped, second_cropped)
 
+        print("axis", end="")
         print(str(int(axis)))
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
@@ -154,6 +155,7 @@ class AutoStitchFunctions:
         # which will act as cross-correlation
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
+        print(center)
 
         return (width / 2.0 + center) / 2
 
