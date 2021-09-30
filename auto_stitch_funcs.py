@@ -123,14 +123,8 @@ class AutoStitchFunctions:
 
         axis = self.compute_rotation_axis(first, second)
 
-        width = first.shape[1]
-        crop_axis = width - int(self.parameters['overlap_region']) + axis
-
         print("axis: ", end="")
         print(axis)
-
-        print("crop axis: ", end="")
-        print(crop_axis)
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
