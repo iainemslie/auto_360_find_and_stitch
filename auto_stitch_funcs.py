@@ -117,13 +117,12 @@ class AutoStitchFunctions:
         second = (second - dark) / flat
 
         # We must crop the first image from first pixel column up until overlap
-        first = first[:, :int(self.parameters['overlap_region'])]
+        #first = first[:, :int(self.parameters['overlap_region'])]
         # We must crop the second image from the overlap until the last pixel column
-        second = second[:, int(self.parameters['overlap_region']):]
+        #second = second[:, int(self.parameters['overlap_region']):]
 
         axis = self.compute_rotation_axis(first, second)
 
-        print("axis: ", end="")
         print(axis)
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
@@ -181,10 +180,6 @@ class AutoStitchFunctions:
         with tifffile.TiffFile(file_name) as f:
             return f.asarray(out='memmap')
 
-
-
-
-
     '''
     def open_images_and_stitch(self, ax, crop, first_image_path, second_image_path, out_fmt):
         # We pass index and formats as argument
@@ -207,16 +202,13 @@ class AutoStitchFunctions:
             second = tmp
         result = np.empty((h, 2 * w - dx), dtype=first.dtype)
         ramp = np.linspace(0, 1, dx)
-
         # Mean values of the overlapping regions must match, which corrects flat-field inconsistency
         # between the two projections
         k = np.mean(first[:, w - dx:]) / np.mean(second[:, :dx])
         second = second * k
-
         result[:, :w - dx] = first[:, :w - dx]
         result[:, w - dx:w] = first[:, w - dx:] * (1 - ramp) + second[:, :dx] * ramp
         result[:, w:] = second[:, dx:]
-
         return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
     '''
 
@@ -247,7 +239,6 @@ class AutoStitchFunctions:
         except FileExistsError:
             print("--> Directory " + self.parameters['temp_dir'] +
                   " already exists - select a different temp directory or delete the current one")
-
     def find_and_stitch_images(self):
         """
         Gets the images corresponding to 0 degrees and 180 degrees.
@@ -286,7 +277,6 @@ class AutoStitchFunctions:
                     pool.map(exec_func, index)
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
-
     def stitch_fdt(self, ct_dir, zdir, first_zero_degree_image_path, second_zero_degree_image_path,
                    first_180_degree_image_path, second_180_degree_image_path, flats_list, tmp_flat_path,
                    darks_list, tmp_dark_path, index):
@@ -315,7 +305,6 @@ class AutoStitchFunctions:
             second_dark_path = os.path.join(tmp_dark_path, darks_list[dark_index + dark_midpoint])
             dark_out_path = os.path.join(out_path, "darks", "Dark_stitched_{:>04}.tif".format(dark_index))
             self.open_images_and_stitch(rotation_axis, 0, first_dark_path, second_dark_path, dark_out_path)
-
     def flat_field_correction(self):
         """
         Get flats/darks/tomo paths in temp directory and call tofu flat correction
@@ -348,7 +337,6 @@ class AutoStitchFunctions:
                         os.system(cmd)
                     except NotADirectoryError:
                         print("Skipped - Not a Directory: " + index_path)
-
     def subtract_images(self):
         """
         For each pair of 0 and 180 degree images. Flip the 180 degree image around the vertical axis
