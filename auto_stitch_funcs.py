@@ -85,6 +85,7 @@ class AutoStitchFunctions:
                     num_images = len(image_list)
                     print("--> " + str(zdir))
                     # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
+                    total = 0
                     for index in range(int(num_images/2)):
                         zero_degree_image_name = image_list[0+index]
                         one_eighty_degree_image_name = image_list[(int(num_images / 2) - 1)+index]
@@ -95,7 +96,11 @@ class AutoStitchFunctions:
                         #print(zero_degree_image_path)
                         #print(one_eighty_degree_image_path)
 
-                        self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
+                        axis = self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
+                        total += axis
+
+                    average = total / num_images
+                    print("Average centre: " + str(int(average)))
 
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
@@ -124,7 +129,7 @@ class AutoStitchFunctions:
 
         axis = self.compute_rotation_axis(first, second)
 
-        print(axis)
+        return axis
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
