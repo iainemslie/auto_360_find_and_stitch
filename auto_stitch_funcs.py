@@ -116,12 +116,13 @@ class AutoStitchFunctions:
         first = (first - dark) / flat
         second = (second - dark) / flat
 
+        width = first.shape[1]
         # We must crop the first image from first pixel column up until overlap
-        #first_cropped = first[:, :int(self.parameters['overlap_region'])]
+        first_cropped = first[:, :int(self.parameters['overlap_region'])]
         # We must crop the second image from the overlap until the last pixel column
-        #second_cropped = second[:, int(self.parameters['overlap_region']):]
+        second_cropped = second[:, :width - int(self.parameters['overlap_region'])]
 
-        axis = self.compute_rotation_axis(first, second)
+        axis = self.compute_rotation_axis(first_cropped, second_cropped)
 
         print(str(int(axis)))
 
