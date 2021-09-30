@@ -121,7 +121,8 @@ class AutoStitchFunctions:
         # We must crop the second image from the overlap until the last pixel column
         #second = second[:, int(self.parameters['overlap_region']):]
         width = first.shape[1]
-        print("Image width: " + width)
+        print("Image width: ", end="")
+        print(width)
 
         axis = self.compute_rotation_axis(first, second)
 
