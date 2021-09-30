@@ -155,9 +155,6 @@ class AutoStitchFunctions:
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
 
-        print("center: ", end="")
-        print(center)
-
         return (width / 2.0 + center) / 2
 
     def print_parameters(self):
