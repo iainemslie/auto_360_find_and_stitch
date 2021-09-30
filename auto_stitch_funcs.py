@@ -3,7 +3,6 @@ import tifffile
 import numpy as np
 import multiprocessing as mp
 from functools import partial
-import matplotlib.pyplot as plt
 
 class AutoStitchFunctions:
     def __init__(self, parameters):
@@ -107,9 +106,6 @@ class AutoStitchFunctions:
         with tifffile.TiffFile(one_eighty_degree_image_path) as tif:
             second = tif.pages[-1].asarray().astype(np.float)
 
-        imgplot1 = plt.imshow(first)
-        imgplot2 = plt.imshow(second)
-
         # Do flat field correction on the images
         flat_files = self.get_filtered_filenames(self.parameters['flats_dir'])
         dark_files = self.get_filtered_filenames(self.parameters['darks_dir'])
@@ -122,13 +118,13 @@ class AutoStitchFunctions:
 
         width = first.shape[1]
         # We must crop the first image from first pixel column up until overlap
-        first_cropped = first[:, :int(self.parameters['overlap_region'])]
-        # Since second image already flipped we use the same crop region
-        second_cropped = second[:, :int(self.parameters['overlap_region'])]
+        #first_cropped = first[:, :int(self.parameters['overlap_region'])]
+        # We must crop the second image from the overlap until the last pixel column
+        #second_cropped = second[:, :int(self.parameters['overlap_region'])]
 
-        axis = self.compute_rotation_axis(first_cropped, second_cropped)
+        axis = self.compute_rotation_axis(first, second)
 
-        print("axis", end="")
+        print("axis: ", end="")
         print(str(int(axis)))
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
