@@ -120,6 +120,8 @@ class AutoStitchFunctions:
         #first = first[:, :int(self.parameters['overlap_region'])]
         # We must crop the second image from the overlap until the last pixel column
         #second = second[:, int(self.parameters['overlap_region']):]
+        width = first.shape[1]
+        print("Image width: " + width)
 
         axis = self.compute_rotation_axis(first, second)
 
@@ -153,6 +155,11 @@ class AutoStitchFunctions:
         # which will act as cross-correlation
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
+
+        print("Center: ", end="")
+        print(center)
+        print("Width: ", end="")
+        print(width)
 
         return (width / 2.0 + center) / 2
 
