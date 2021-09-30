@@ -117,16 +117,20 @@ class AutoStitchFunctions:
         second = (second - dark) / flat
 
         # We must crop the first image from first pixel column up until overlap
-        #first = first[:, :int(self.parameters['overlap_region'])]
+        first_cropped = first[:, :int(self.parameters['overlap_region'])]
         # We must crop the second image from the overlap until the last pixel column
-        #second = second[:, int(self.parameters['overlap_region']):]
+        second_cropped = second[:, int(self.parameters['overlap_region']):]
         width = first.shape[1]
         print("Image width: ", end="")
         print(width)
 
         axis = self.compute_rotation_axis(first, second)
+        axis_cropped = self.compute_rotation_axis(first_cropped, second_cropped)
 
+        print("Axis: ", end="")
         print(axis)
+        print("Axis cropped: ", end="")
+        print(axis_cropped)
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
