@@ -83,18 +83,19 @@ class AutoStitchFunctions:
                     tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
                     image_list = sorted(os.listdir(tmp_path))
                     num_images = len(image_list)
-                    # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
-                    zero_degree_image_name = image_list[0]
-                    one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
-
-                    zero_degree_image_path = os.path.join(tmp_path, zero_degree_image_name)
-                    one_eighty_degree_image_path = os.path.join(tmp_path, one_eighty_degree_image_name)
-
                     print("--> " + str(zdir))
-                    print(zero_degree_image_path)
-                    print(one_eighty_degree_image_path)
+                    # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
+                    for index in range(image_list/2):
+                        zero_degree_image_name = image_list[0+index]
+                        one_eighty_degree_image_name = image_list[(int(num_images / 2) - 1)+index]
 
-                    self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
+                        zero_degree_image_path = os.path.join(tmp_path, zero_degree_image_name)
+                        one_eighty_degree_image_path = os.path.join(tmp_path, one_eighty_degree_image_name)
+
+                        #print(zero_degree_image_path)
+                        #print(one_eighty_degree_image_path)
+
+                        self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
 
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
@@ -120,9 +121,6 @@ class AutoStitchFunctions:
         #first = first[:, :int(self.parameters['overlap_region'])]
         # We must crop the second image from the overlap until the last pixel column
         #second = second[:, int(self.parameters['overlap_region']):]
-        width = first.shape[1]
-        print("Image width: ", end="")
-        print(width)
 
         axis = self.compute_rotation_axis(first, second)
 
@@ -156,11 +154,6 @@ class AutoStitchFunctions:
         # which will act as cross-correlation
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
-
-        print("Center: ", end="")
-        print(center)
-        print("Width: ", end="")
-        print(width)
 
         return (width / 2.0 + center) / 2
 
