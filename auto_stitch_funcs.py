@@ -117,15 +117,13 @@ class AutoStitchFunctions:
         second = (second - dark) / flat
 
         # We must crop the first image from first pixel column up until overlap
-        first_cropped = first[:, :int(self.parameters['overlap_region'])]
+        #first_cropped = first[:, :int(self.parameters['overlap_region'])]
         # We must crop the second image from the overlap until the last pixel column
-        second_cropped = second[:, int(self.parameters['overlap_region']):]
+        #second_cropped = second[:, int(self.parameters['overlap_region']):]
 
         axis = self.compute_rotation_axis(first, second)
-        axis_cropped = self.compute_rotation_axis(first_cropped, second_cropped)
 
-        print(axis)
-        print(axis_cropped)
+        print(str(int(axis)))
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
@@ -155,9 +153,6 @@ class AutoStitchFunctions:
         # which will act as cross-correlation
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
-
-        print("center: ", end="")
-        print(center)
 
         return (width / 2.0 + center) / 2
 
