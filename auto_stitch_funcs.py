@@ -108,13 +108,7 @@ class AutoStitchFunctions:
                     axis_list.append(self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path))
 
                     print(axis_list)
-                    total = 0
-                    for num in axis_list:
-                        total += num
-                    basic_average = total / len(axis_list)
-                    print("Basic Average: " + str(int(basic_average)))
-                    print("Geometric Mean: " + str(int(gmean(axis_list))))
-
+                    print("Geometric Mean: " + str(int(round(gmean(axis_list)))))
 
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
