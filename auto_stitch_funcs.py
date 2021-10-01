@@ -3,6 +3,7 @@ import tifffile
 import numpy as np
 import multiprocessing as mp
 from functools import partial
+from scipy.stats import gmean
 
 class AutoStitchFunctions:
     def __init__(self, parameters):
@@ -86,15 +87,34 @@ class AutoStitchFunctions:
                     # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
                     zero_degree_image_name = image_list[0]
                     one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
+                    ninety_degree_image_name = image_list[int(num_images / 4) - 1]
+                    two_seventy_degree_image_name = image_list[int(num_images * 3 / 4) - 1]
+                    three_sixty_degree_image_name = image_list[-1]
 
                     zero_degree_image_path = os.path.join(tmp_path, zero_degree_image_name)
                     one_eighty_degree_image_path = os.path.join(tmp_path, one_eighty_degree_image_name)
+                    ninety_degree_image_path = os.path.join(tmp_path, ninety_degree_image_name)
+                    two_seventy_degree_image_path = os.path.join(tmp_path, two_seventy_degree_image_name)
+                    three_sixty_degree_image_path = os.path.join(tmp_path, three_sixty_degree_image_name)
 
                     print("--> " + str(zdir))
                     print(zero_degree_image_path)
                     print(one_eighty_degree_image_path)
 
-                    self.compute_center(zero_degree_image_path, one_eighty_degree_image_path)
+                    axis_list = []
+                    axis_list.append(self.compute_center(zero_degree_image_path, one_eighty_degree_image_path))
+                    axis_list.append(self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path))
+                    axis_list.append(self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path))
+                    axis_list.append(self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path))
+
+                    print(axis_list)
+                    total = 0
+                    for num in axis_list:
+                        total += num
+                    basic_average = total / len(axis_list)
+                    print("Basic Average: " + int(basic_average))
+                    print("Geometric Mean: " + gmean(axis_list))
+
 
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
@@ -125,12 +145,13 @@ class AutoStitchFunctions:
         second_cropped = second[:, :overlap_region]
 
         axis = self.compute_rotation_axis(first, second)
-        print("axis: ", end="")
-        print(str(int(axis)))
+        #print("axis: ", end="")
+        #print(str(int(axis)))
 
         cropped_axis = self.compute_rotation_axis(first_cropped, second_cropped)
-        print("cropped axis: ", end="")
-        print(str(int(cropped_axis)))
+        #print("cropped axis: ", end="")
+        #print(str(int(cropped_axis)))
+        return cropped_axis
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
