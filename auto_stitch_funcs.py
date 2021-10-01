@@ -120,17 +120,17 @@ class AutoStitchFunctions:
         # We must multiply by two to get the "actual" overlap region
         overlap_region = int(2 * self.parameters['overlap_region'])
         # We must crop the first image from first pixel column up until overlap
-        first_cropped = first[:, :overlap_region]
+        #first_cropped = first[:, :overlap_region]
         # We must crop the 180 degree rotation (which has been flipped 180) from width-overlap until last pixel column
-        second_cropped = second[:, int(width - overlap_region):]
+        #second_cropped = second[:, int(width - overlap_region):]
 
         axis = self.compute_rotation_axis(first, second)
         print("axis: ", end="")
         print(str(int(axis)))
 
-        cropped_axis = self.compute_rotation_axis(first_cropped, second_cropped)
-        print("cropped axis: ", end="")
-        print(str(int(cropped_axis)))
+        #cropped_axis = self.compute_rotation_axis(first_cropped, second_cropped)
+        #print("cropped axis: ", end="")
+        #print(str(int(cropped_axis)))
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
         result = []
