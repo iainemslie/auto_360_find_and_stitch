@@ -112,7 +112,7 @@ class AutoStitchFunctions:
                     for num in axis_list:
                         total += num
                     basic_average = total / len(axis_list)
-                    print("Basic Average: " + int(basic_average))
+                    print("Basic Average: " + str(basic_average))
                     print("Geometric Mean: " + gmean(axis_list))
 
 
@@ -181,7 +181,7 @@ class AutoStitchFunctions:
         # which will act as cross-correlation
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
-        print(center)
+        #print(center)
 
         return (width / 2.0 + center) / 2
 
