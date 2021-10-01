@@ -119,8 +119,8 @@ class AutoStitchFunctions:
         width = first.shape[1]
         # We must crop the first image from first pixel column up until overlap
         first_cropped = first[:, :int(self.parameters['overlap_region'])]
-        # We must crop the second image from the overlap until the last pixel column
-        second_cropped = second[:, :int(self.parameters['overlap_region'])]
+        # We must crop the 180 degree rotation (which has been flipped 180) from width-overlap until last pixel column
+        second_cropped = second[:, int(width - self.parameters['overlap_region']):]
 
         axis = self.compute_rotation_axis(first, second)
         print("axis: ", end="")
