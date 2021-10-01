@@ -112,8 +112,8 @@ class AutoStitchFunctions:
                     for num in axis_list:
                         total += num
                     basic_average = total / len(axis_list)
-                    print("Basic Average: " + str(basic_average))
-                    print("Geometric Mean: " + gmean(axis_list))
+                    print("Basic Average: " + str(int(basic_average)))
+                    print("Geometric Mean: " + str(int(gmean(axis_list))))
 
 
                 except NotADirectoryError:
