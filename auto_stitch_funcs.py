@@ -70,7 +70,7 @@ class AutoStitchFunctions:
                 for zdir in zdir_list:
                     if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
                         zdir_list.remove(zdir)
-                self.z_dirs[ct_dir] = dict(sorted(zdir_list))
+                self.z_dirs[ct_dir] = sorted(zdir_list)
         except FileNotFoundError:
             print("File Not Found Error")
 
