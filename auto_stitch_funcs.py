@@ -115,8 +115,8 @@ class AutoStitchFunctions:
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
 
-                z_dict[zdir] = geometric_mean
-            self.z_axis_dict[ct_dir] = z_dict
+                z_dict[str(zdir)] = geometric_mean
+            self.z_axis_dict[str(ct_dir)] = z_dict
 
     def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
         # Read each image into a numpy array
