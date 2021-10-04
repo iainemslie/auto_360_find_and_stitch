@@ -11,7 +11,6 @@ class AutoStitchFunctions:
         self.ct_dirs = []
         self.ct_list = []
         self.z_dirs = {}
-        self.z_axis_dict = {}
         self.parameters = parameters
 
     def run_auto_stitch(self):
@@ -34,7 +33,8 @@ class AutoStitchFunctions:
 
         # Find 0 and 180 degree pairs and compute the centre
         self.find_images_and_compute_centre()
-        print(self.z_axis_dict)
+
+
 
 
     def find_ct_dirs(self):
@@ -78,7 +78,6 @@ class AutoStitchFunctions:
     def find_images_and_compute_centre(self):
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
-            z_dict = {}
             for zdir in ct_dir[1]:
                 # Get list of image names in the directory
                 try:
@@ -109,13 +108,10 @@ class AutoStitchFunctions:
                     axis_list.append(self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path))
 
                     print(axis_list)
-                    geometric_mean = round(gmean(axis_list))
-                    print("Geometric Mean: " + str(geometric_mean))
+                    print("Geometric Mean: " + str(round(gmean(axis_list))))
+
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
-
-                z_dict[str(zdir)] = geometric_mean
-            self.z_axis_dict[ct_dir] = z_dict
 
     def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
         # Read each image into a numpy array
