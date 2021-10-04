@@ -108,7 +108,7 @@ class AutoStitchFunctions:
                     axis_list.append(self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path))
 
                     print(axis_list)
-                    print("Geometric Mean: " + str(int(round(gmean(axis_list)))))
+                    print("Geometric Mean: " + str(round(gmean(axis_list))))
 
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
