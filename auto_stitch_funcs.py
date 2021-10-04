@@ -11,6 +11,7 @@ class AutoStitchFunctions:
         self.ct_dirs = []
         self.ct_list = []
         self.z_dirs = {}
+        self.z_axis_list = []
         self.parameters = parameters
 
     def run_auto_stitch(self):
@@ -33,10 +34,6 @@ class AutoStitchFunctions:
 
         # Find 0 and 180 degree pairs and compute the centre
         self.find_images_and_compute_centre()
-
-        print(self.ct_dirs)
-        print(self.ct_list)
-        print(self.z_dirs)
 
 
     def find_ct_dirs(self):
@@ -73,7 +70,7 @@ class AutoStitchFunctions:
                 for zdir in zdir_list:
                     if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
                         zdir_list.remove(zdir)
-                self.z_dirs[ct_dir] = sorted(zdir_list)
+                self.z_dirs[ct_dir] = dict(sorted(zdir_list))
         except FileNotFoundError:
             print("File Not Found Error")
 
@@ -112,6 +109,7 @@ class AutoStitchFunctions:
                     print(axis_list)
                     print("Geometric Mean: " + str(round(gmean(axis_list))))
 
+
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
 
@@ -140,13 +138,7 @@ class AutoStitchFunctions:
         # We must crop the 180 degree rotation (which has been flipped 180) from width-overlap until last pixel column
         second_cropped = second[:, :overlap_region]
 
-        axis = self.compute_rotation_axis(first, second)
-        #print("axis: ", end="")
-        #print(str(int(axis)))
-
         cropped_axis = self.compute_rotation_axis(first_cropped, second_cropped)
-        #print("cropped axis: ", end="")
-        #print(str(int(cropped_axis)))
         return cropped_axis
 
     def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
@@ -301,6 +293,8 @@ class AutoStitchFunctions:
                     pool.map(exec_func, index)
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
+                    
+                    
     def stitch_fdt(self, ct_dir, zdir, first_zero_degree_image_path, second_zero_degree_image_path,
                    first_180_degree_image_path, second_180_degree_image_path, flats_list, tmp_flat_path,
                    darks_list, tmp_dark_path, index):
@@ -329,6 +323,7 @@ class AutoStitchFunctions:
             second_dark_path = os.path.join(tmp_dark_path, darks_list[dark_index + dark_midpoint])
             dark_out_path = os.path.join(out_path, "darks", "Dark_stitched_{:>04}.tif".format(dark_index))
             self.open_images_and_stitch(rotation_axis, 0, first_dark_path, second_dark_path, dark_out_path)
+            
     def flat_field_correction(self):
         """
         Get flats/darks/tomo paths in temp directory and call tofu flat correction
@@ -361,6 +356,7 @@ class AutoStitchFunctions:
                         os.system(cmd)
                     except NotADirectoryError:
                         print("Skipped - Not a Directory: " + index_path)
+                        
     def subtract_images(self):
         """
         For each pair of 0 and 180 degree images. Flip the 180 degree image around the vertical axis
