@@ -34,7 +34,9 @@ class AutoStitchFunctions:
         # Find 0 and 180 degree pairs and compute the centre
         self.find_images_and_compute_centre()
 
-
+        print(self.ct_dirs)
+        print(self.ct_list)
+        print(self.z_dirs)
 
 
     def find_ct_dirs(self):
@@ -175,7 +177,6 @@ class AutoStitchFunctions:
         # which will act as cross-correlation
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
-        #print(center)
 
         return (width / 2.0 + center) / 2
 
