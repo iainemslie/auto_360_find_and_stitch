@@ -11,6 +11,7 @@ class AutoStitchFunctions:
         self.ct_dirs = []
         self.ct_list = []
         self.z_dirs = {}
+        self.ct_axis_dict = {}
         self.parameters = parameters
 
     def run_auto_stitch(self):
@@ -33,7 +34,7 @@ class AutoStitchFunctions:
 
         # Find 0 and 180 degree pairs and compute the centre
         self.find_images_and_compute_centre()
-
+        print(self.ct_axis_dict)
 
 
 
@@ -76,21 +77,29 @@ class AutoStitchFunctions:
             print("File Not Found Error")
 
     def find_images_and_compute_centre(self):
+        """
+        Finds the images corresponding to the 0-180, 90-270, 180-360 degree pairs
+        These are used to compute the average axis of rotation for each zview in a ct directory
+        :return: Result is saved to self.ct_axis_dict
+        """
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
+            z_axis_dict = {}
             for zdir in ct_dir[1]:
                 # Get list of image names in the directory
                 try:
                     tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
                     image_list = sorted(os.listdir(tmp_path))
                     num_images = len(image_list)
-                    # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
+
+                    # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode
                     zero_degree_image_name = image_list[0]
                     one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
                     ninety_degree_image_name = image_list[int(num_images / 4) - 1]
                     two_seventy_degree_image_name = image_list[int(num_images * 3 / 4) - 1]
                     three_sixty_degree_image_name = image_list[-1]
 
+                    # Get the paths for the images
                     zero_degree_image_path = os.path.join(tmp_path, zero_degree_image_name)
                     one_eighty_degree_image_path = os.path.join(tmp_path, one_eighty_degree_image_name)
                     ninety_degree_image_path = os.path.join(tmp_path, ninety_degree_image_name)
@@ -101,19 +110,34 @@ class AutoStitchFunctions:
                     print(zero_degree_image_path)
                     print(one_eighty_degree_image_path)
 
+                    # Determine the axis of rotation for pairs at 0-180, 90-270 and 180-360 degrees
                     axis_list = []
                     axis_list.append(self.compute_center(zero_degree_image_path, one_eighty_degree_image_path))
                     axis_list.append(self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path))
                     axis_list.append(self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path))
-                    axis_list.append(self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path))
 
+                    # Find the average of 180 degree rotation pairs
                     print(axis_list)
-                    print("Geometric Mean: " + str(round(gmean(axis_list))))
+                    geometric_mean = round(gmean(axis_list))
+                    print("Geometric Mean: " + str(geometric_mean))
 
+                    # Save each zview and its axis of rotation value as key-value pair
+                    z_axis_dict[str(zdir)] = geometric_mean
                 except NotADirectoryError:
                     print("Skipped - Not a Directory: " + tmp_path)
 
+            # Save all zview-axis pairs to its container CT directory
+            self.ct_axis_dict[str(ct_dir)] = z_axis_dict
+
     def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
+        """
+        Takes two pairs of images in half-acquisition mode separated by a full 180 degree rotation of the sample
+        The images are then flat-corrected and cropped to the overlap region
+        They are then correlated using fft to determine the axis of rotation
+        :param zero_degree_image_path: First sample scan
+        :param one_eighty_degree_image_path: Second sample scan rotated 180 degree from first sample scan
+        :return:
+        """
         # Read each image into a numpy array
         with tifffile.TiffFile(zero_degree_image_path) as tif:
             first = tif.pages[0].asarray().astype(np.float)
@@ -206,29 +230,6 @@ class AutoStitchFunctions:
         stitched = self.stitch(first, second, ax, crop)
         tifffile.imsave(out_fmt, stitched)
     '''
-    '''
-    def stitch(self, first, second, axis, crop):
-        h, w = first.shape
-        if axis > w / 2:
-            dx = int(2 * (w - axis) + 0.5)
-        else:
-            dx = int(2 * axis + 0.5)
-            tmp = np.copy(first)
-            first = second
-            second = tmp
-        result = np.empty((h, 2 * w - dx), dtype=first.dtype)
-        ramp = np.linspace(0, 1, dx)
-        # Mean values of the overlapping regions must match, which corrects flat-field inconsistency
-        # between the two projections
-        k = np.mean(first[:, w - dx:]) / np.mean(second[:, :dx])
-        second = second * k
-        result[:, :w - dx] = first[:, :w - dx]
-        result[:, w - dx:w] = first[:, w - dx:] * (1 - ramp) + second[:, :dx] * ramp
-        result[:, w:] = second[:, dx:]
-        return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
-    '''
-
-
 
     '''
     def create_temp_dir(self):
@@ -255,6 +256,7 @@ class AutoStitchFunctions:
         except FileExistsError:
             print("--> Directory " + self.parameters['temp_dir'] +
                   " already exists - select a different temp directory or delete the current one")
+                  
     def find_and_stitch_images(self):
         """
         Gets the images corresponding to 0 degrees and 180 degrees.
