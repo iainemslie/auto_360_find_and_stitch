@@ -39,8 +39,10 @@ class AutoStitchFunctions:
         print(self.ct_axis_dict)
 
         # For each ctdir and zview we want to stitch all the images using the values in ct_axis_dict
-        self.find_and_stitch_images()
         print("Output Directory: " + self.parameters['output_dir'])
+        print("Input Directory: " + self.parameters['input_dir'])
+        self.find_and_stitch_images()
+
 
     def find_ct_dirs(self):
         """
@@ -209,7 +211,9 @@ class AutoStitchFunctions:
                     print("--> " + str(zdir))
 
                     general_inpath = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir)
+                    print("general_inpath: " + general_inpath)
                     general_outpath = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
+                    print("general_outpath: " + general_outpath)
                     rotation_axis = self.ct_axis_dict[str(ct_dir[0])][str(zdir)]
 
                     #tomo_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
@@ -255,8 +259,8 @@ class AutoStitchFunctions:
         image_list = sorted(os.listdir(os.path.join(in_path, type_str)))
         midpoint = int(len(image_list) / 2)
         for index in range(midpoint):
-            first_path = os.path.join(in_path, image_list[index])
-            second_path = os.path.join(in_path, image_list[midpoint + index])
+            first_path = os.path.join(in_path, type_str, image_list[index])
+            second_path = os.path.join(in_path, type_str, image_list[midpoint + index])
             out_path = os.path.join(out_path, type_str, type_str + "_stitched_{:>04}.tif".format(index))
             self.open_images_and_stitch(rotation_axis, 0, first_path, second_path, out_path)
 
