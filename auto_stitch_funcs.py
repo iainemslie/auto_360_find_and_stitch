@@ -127,7 +127,7 @@ class AutoStitchFunctions:
                     print("Skipped - Not a Directory: " + tmp_path)
 
             # Save all zview-axis pairs to its container CT directory
-            self.ct_axis_dict[str(ct_dir)] = z_axis_dict
+            self.ct_axis_dict[str(ct_dir[0])] = z_axis_dict
 
     def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
         """
