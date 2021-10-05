@@ -207,28 +207,37 @@ class AutoStitchFunctions:
                 try:
                     print("--> " + str(zdir))
 
-                    tomo_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
-                    tomo_image_list = sorted(os.listdir(tomo_path))
-                    tomo_num_images = len(tomo_image_list)
-                    print("Images in tomo: " + str(tomo_num_images))
+                    general_inpath = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir)
+                    general_outpath = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
+                    rotation_axis = self.ct_axis_dict[str(ct_dir[0])][str(zdir)]
 
-                    flats_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats")
-                    flats_image_list = sorted(os.listdir(flats_path))
-                    flats_num_images = len(flats_image_list)
-                    print("Images in flats: " + str(flats_num_images))
+                    #tomo_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
+                    #tomo_image_list = sorted(os.listdir(tomo_path))
+                    #tomo_num_images = len(tomo_image_list)
+                    #print("Images in tomo: " + str(tomo_num_images))
+                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "tomo")
 
-                    darks_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "darks")
-                    darks_image_list = sorted(os.listdir(darks_path))
-                    darks_num_images = len(darks_image_list)
-                    print("Images in darks: " + str(darks_num_images))
+                    # TODO : need to account for case where flats, darks, flats2 don't exist
 
-                    #TODO : need to account for case where flats2 doesn't exist
-                    flats2_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats2")
-                    flats2_image_list = sorted(os.listdir(flats2_path))
-                    flats2_num_images = len(flats2_image_list)
-                    print("Images in flats2: " + str(flats2_num_images))
+                    #flats_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats")
+                    #flats_image_list = sorted(os.listdir(flats_path))
+                    #flats_num_images = len(flats_image_list)
+                    #print("Images in flats: " + str(flats_num_images))
+                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "flats")
 
-                    print("Axis of rotation: " + str(self.ct_axis_dict[str(ct_dir[0])][str(zdir)]))
+                    #darks_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "darks")
+                    #darks_image_list = sorted(os.listdir(darks_path))
+                    #darks_num_images = len(darks_image_list)
+                    #print("Images in darks: " + str(darks_num_images))
+                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "darks")
+
+                    #flats2_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats2")
+                    #flats2_image_list = sorted(os.listdir(flats2_path))
+                    #flats2_num_images = len(flats2_image_list)
+                    #print("Images in flats2: " + str(flats2_num_images))
+                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "flats2")
+
+                    print("Axis of rotation: " + str(rotation_axis))
 
                 except NotADirectoryError as e:
                     print("Skipped - Not a Directory: " + e.filename)
@@ -250,6 +259,7 @@ class AutoStitchFunctions:
             out_path = os.path.join(out_path, type_str, type_str + "_stitched_{:>04}.tif".format(index))
             self.open_images_and_stitch(rotation_axis, 0, first_path, second_path, out_path)
 
+    '''
     def stitch_fdt(self, rotation_axis, tomo_path, flats_path, darks_path, flats2_path, output_path):
 
         # Get list of names of images in tomo directory
@@ -287,7 +297,7 @@ class AutoStitchFunctions:
             second_flat2_path = os.path.join(flats2_path, flats2_image_list[flat2_index + flat2_midpoint])
             flat2_out_path = os.path.join(output_path, "flats2", "Flat2_stitched_{:>04}.tif".format(flat2_index))
             self.open_images_and_stitch(rotation_axis, 0, first_flat2_path, second_flat2_path, flat2_out_path)
-
+    '''
 
     def print_parameters(self):
         """
