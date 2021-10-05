@@ -32,11 +32,13 @@ class AutoStitchFunctions:
         self.get_z_dirs()
         print(self.z_dirs)
 
-        # Find 0 and 180 degree pairs and compute the centre
+        # For each ctdir and each zview we compute the axis of rotation
         self.find_images_and_compute_centre()
+        print("==> Found the following zviews and their corresponding axis of rotation <==")
         print(self.ct_axis_dict)
 
-
+        # For each ctdir and zview we want to stitch all the images using the values in ct_axis_dict
+        self.stitch_images()
 
     def find_ct_dirs(self):
         """
@@ -107,8 +109,8 @@ class AutoStitchFunctions:
                     three_sixty_degree_image_path = os.path.join(tmp_path, three_sixty_degree_image_name)
 
                     print("--> " + str(zdir))
-                    print(zero_degree_image_path)
-                    print(one_eighty_degree_image_path)
+                    #print(zero_degree_image_path)
+                    #print(one_eighty_degree_image_path)
 
                     # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
                     axis_list = []
@@ -196,6 +198,12 @@ class AutoStitchFunctions:
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
 
         return (width / 2.0 + center) / 2
+
+    def stitch_images(self):
+        ct_items = self.z_dirs.items()
+        for ct_dir in ct_items:
+            for zdir in ct_dir[1]:
+                print(zdir)
 
     def print_parameters(self):
         """
