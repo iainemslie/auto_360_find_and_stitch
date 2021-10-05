@@ -110,11 +110,12 @@ class AutoStitchFunctions:
                     print(zero_degree_image_path)
                     print(one_eighty_degree_image_path)
 
-                    # Determine the axis of rotation for pairs at 0-180, 90-270 and 180-360 degrees
+                    # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
                     axis_list = []
                     axis_list.append(self.compute_center(zero_degree_image_path, one_eighty_degree_image_path))
                     axis_list.append(self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path))
                     axis_list.append(self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path))
+                    axis_list.append(self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path))
 
                     # Find the average of 180 degree rotation pairs
                     print(axis_list)
