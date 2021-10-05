@@ -109,8 +109,6 @@ class AutoStitchFunctions:
                     three_sixty_degree_image_path = os.path.join(tmp_path, three_sixty_degree_image_name)
 
                     print("--> " + str(zdir))
-                    #print(zero_degree_image_path)
-                    #print(one_eighty_degree_image_path)
 
                     # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
                     axis_list = []
@@ -202,8 +200,35 @@ class AutoStitchFunctions:
     def stitch_images(self):
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
+            print(ct_dir[0])
             for zdir in ct_dir[1]:
-                print(zdir)
+                # Get list of image names in the directory
+                try:
+                    print("--> " + str(zdir))
+
+                    tomo_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
+                    tomo_image_list = sorted(os.listdir(tomo_path))
+                    tomo_num_images = len(tomo_image_list)
+                    print("Images in tomo: " + str(tomo_num_images))
+
+                    flats_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats")
+                    flats_image_list = sorted(os.listdir(flats_path))
+                    flats_num_images = len(flats_image_list)
+                    print("Images in flats: " + str(flats_num_images))
+
+                    darks_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "darks")
+                    darks_image_list = sorted(os.listdir(darks_path))
+                    darks_num_images = len(darks_image_list)
+                    print("Images in darks: " + str(darks_num_images))
+
+                    flats2_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats2")
+                    flats2_image_list = sorted(os.listdir(flats2_path))
+                    flats2_num_images = len(flats2_image_list)
+                    print("Images in flats2: " + str(flats2_num_images))
+
+
+                except NotADirectoryError:
+                    print("Skipped - Not a Directory: " + tomo_path)
 
     def print_parameters(self):
         """
