@@ -226,7 +226,7 @@ class AutoStitchFunctions:
                     flats2_num_images = len(flats2_image_list)
                     print("Images in flats2: " + str(flats2_num_images))
 
-                    print("Axis of rotation: " + self.ct_axis_dict[str(ct_dir[0][str(zdir)])])
+                    print("Axis of rotation: " + self.ct_axis_dict[str(ct_dir[0])][str(zdir)])
 
                 except NotADirectoryError as e:
                     print("Skipped - Not a Directory: " + e.filename)
