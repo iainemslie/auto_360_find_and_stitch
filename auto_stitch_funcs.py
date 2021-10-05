@@ -32,6 +32,7 @@ class AutoStitchFunctions:
         self.get_z_dirs()
         print(self.z_dirs)
 
+        # TODO - Parallelize the axis search
         # For each ctdir and each zview we compute the axis of rotation
         self.find_images_and_compute_centre()
         print("==> Found the following zviews and their corresponding axis of rotation <==")
@@ -251,7 +252,7 @@ class AutoStitchFunctions:
         :param out_path: absolute path to output directory
         :param type_str: Type of subdirectory - e.g. "tomo", "flats", "darks", "flats2"
         """
-        image_list = sorted(os.listdir(in_path + type_str))
+        image_list = sorted(os.listdir(os.path.join(in_path, type_str)))
         midpoint = int(len(image_list) / 2)
         for index in range(midpoint):
             first_path = os.path.join(in_path, image_list[index])
