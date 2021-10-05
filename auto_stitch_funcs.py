@@ -200,7 +200,7 @@ class AutoStitchFunctions:
     def stitch_images(self):
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
-            print(ct_dir[0])
+            print("===> " + ct_dir[0])
             for zdir in ct_dir[1]:
                 # Get list of image names in the directory
                 try:
@@ -226,9 +226,10 @@ class AutoStitchFunctions:
                     flats2_num_images = len(flats2_image_list)
                     print("Images in flats2: " + str(flats2_num_images))
 
+                    print("Axis of rotation: " + self.ct_axis_dict[str(ct_dir[0][str(zdir)])])
 
-                except NotADirectoryError:
-                    print("Skipped - Not a Directory: " + tomo_path)
+                except NotADirectoryError as e:
+                    print("Skipped - Not a Directory: " + e.filename)
 
     def print_parameters(self):
         """
