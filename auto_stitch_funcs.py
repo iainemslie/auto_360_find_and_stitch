@@ -38,7 +38,8 @@ class AutoStitchFunctions:
         print(self.ct_axis_dict)
 
         # For each ctdir and zview we want to stitch all the images using the values in ct_axis_dict
-        self.stitch_images()
+        self.find_and_stitch_images()
+        print("Output Directory: " + self.parameters['output_dir'])
 
     def find_ct_dirs(self):
         """
@@ -197,10 +198,10 @@ class AutoStitchFunctions:
 
         return (width / 2.0 + center) / 2
 
-    def stitch_images(self):
+    def find_and_stitch_images(self):
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
-            print("===> " + ct_dir[0])
+            print("=> " + ct_dir[0])
             for zdir in ct_dir[1]:
                 # Get list of image names in the directory
                 try:
@@ -221,6 +222,7 @@ class AutoStitchFunctions:
                     darks_num_images = len(darks_image_list)
                     print("Images in darks: " + str(darks_num_images))
 
+                    #TODO : need to account for case where flats2 doesn't exist
                     flats2_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats2")
                     flats2_image_list = sorted(os.listdir(flats2_path))
                     flats2_num_images = len(flats2_image_list)
@@ -230,6 +232,62 @@ class AutoStitchFunctions:
 
                 except NotADirectoryError as e:
                     print("Skipped - Not a Directory: " + e.filename)
+
+    def stitch_fdt_general(self, rotation_axis, in_path, out_path, type_str):
+        """
+        Finds images in tomo, flats, darks, flats2 directories corresponding to 180 degree pairs
+        The first image is stitched with the middle image and so on by using the index and midpoint
+        :param rotation_axis: axis of rotation for z-directory
+        :param in_path: absolute path to z-directory
+        :param out_path: absolute path to output directory
+        :param type_str: Type of subdirectory - e.g. "tomo", "flats", "darks", "flats2"
+        """
+        image_list = sorted(os.listdir(in_path + type_str))
+        midpoint = int(len(image_list) / 2)
+        for index in range(midpoint):
+            first_path = os.path.join(in_path, image_list[index])
+            second_path = os.path.join(in_path, image_list[midpoint + index])
+            out_path = os.path.join(out_path, type_str, type_str + "_stitched_{:>04}.tif".format(index))
+            self.open_images_and_stitch(rotation_axis, 0, first_path, second_path, out_path)
+
+    def stitch_fdt(self, rotation_axis, tomo_path, flats_path, darks_path, flats2_path, output_path):
+
+        # Get list of names of images in tomo directory
+        tomo_image_list = sorted(os.listdir(tomo_path))
+        tomo_midpoint = int(len(tomo_image_list) / 2)
+        for tomo_index in range(tomo_midpoint):
+            first_tomo_path = os.path.join(tomo_path, tomo_image_list[tomo_index])
+            second_tomo_path = os.path.join(tomo_path, tomo_image_list[tomo_index + tomo_midpoint])
+            tomo_out_path = os.path.join(output_path, "tomo", "Tomo_stitched_{:>04}.tif".format(tomo_index))
+            self.open_images_and_stitch(rotation_axis, 0, first_tomo_path, second_tomo_path, tomo_out_path)
+
+        # Get list of names of images in flats directory
+        flats_image_list = sorted(os.listdir(flats_path))
+        flat_midpoint = int(len(flats_image_list) / 2)
+        for flat_index in range(flat_midpoint):
+            first_flat_path = os.path.join(flats_path, flats_image_list[flat_index])
+            second_flat_path = os.path.join(flats_path, flats_image_list[flat_index + flat_midpoint])
+            flat_out_path = os.path.join(output_path, "flats", "Flat_stitched_{:>04}.tif".format(flat_index))
+            self.open_images_and_stitch(rotation_axis, 0, first_flat_path, second_flat_path, flat_out_path)
+
+        # Get list of names of images in darks directory
+        darks_image_list = sorted(os.listdir(darks_path))
+        dark_midpoint = int(len(darks_image_list) / 2)
+        for dark_index in range(dark_midpoint):
+            first_dark_path = os.path.join(darks_path, darks_image_list[dark_index])
+            second_dark_path = os.path.join(darks_path, darks_image_list[dark_index + dark_midpoint])
+            dark_out_path = os.path.join(output_path, "darks", "Dark_stitched_{:>04}.tif".format(dark_index))
+            self.open_images_and_stitch(rotation_axis, 0, first_dark_path, second_dark_path, dark_out_path)
+
+        # Get list of names of images in flats2 directory
+        flats2_image_list = sorted(os.listdir(flats2_path))
+        flat2_midpoint = int(len(flats2_image_list) / 2)
+        for flat2_index in range(flat2_midpoint):
+            first_flat2_path = os.path.join(flats2_path, flats2_image_list[flat2_index])
+            second_flat2_path = os.path.join(flats2_path, flats2_image_list[flat2_index + flat2_midpoint])
+            flat2_out_path = os.path.join(output_path, "flats2", "Flat2_stitched_{:>04}.tif".format(flat2_index))
+            self.open_images_and_stitch(rotation_axis, 0, first_flat2_path, second_flat2_path, flat2_out_path)
+
 
     def print_parameters(self):
         """
@@ -255,7 +313,6 @@ class AutoStitchFunctions:
         with tifffile.TiffFile(file_name) as f:
             return f.asarray(out='memmap')
 
-    '''
     def open_images_and_stitch(self, ax, crop, first_image_path, second_image_path, out_fmt):
         # We pass index and formats as argument
         first = self.read_image(first_image_path)
@@ -263,8 +320,31 @@ class AutoStitchFunctions:
         # We flip the second image before stitching
         second = np.fliplr(second)
         stitched = self.stitch(first, second, ax, crop)
-        tifffile.imsave(out_fmt, stitched)
-    '''
+        tifffile.imwrite(out_fmt, stitched)
+
+    def stitch(first, second, axis, crop):
+        h, w = first.shape
+        if axis > w / 2:
+            dx = int(2 * (w - axis) + 0.5)
+        else:
+            dx = int(2 * axis + 0.5)
+            tmp = np.copy(first)
+            first = second
+            second = tmp
+        result = np.empty((h, 2 * w - dx), dtype=first.dtype)
+        ramp = np.linspace(0, 1, dx)
+
+        # Mean values of the overlapping regions must match, which corrects flat-field inconsistency
+        # between the two projections
+        # We clip the values in second so that there are no saturated pixel overflow problems
+        k = np.mean(first[:, w - dx:]) / np.mean(second[:, :dx])
+        second = np.clip(second * k, np.iinfo(np.uint16).min, np.iinfo(np.uint16).max).astype(np.uint16)
+
+        result[:, :w - dx] = first[:, :w - dx]
+        result[:, w - dx:w] = first[:, w - dx:] * (1 - ramp) + second[:, :dx] * ramp
+        result[:, w:] = second[:, dx:]
+
+        return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
 
     '''
     def create_temp_dir(self):
