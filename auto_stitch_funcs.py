@@ -236,6 +236,7 @@ class AutoStitchFunctions:
         :param out_path: absolute path to output directory
         :param type_str: Type of subdirectory - e.g. "tomo", "flats", "darks", "flats2"
         """
+        os.makedirs(os.path.join(out_path, type_str), mode=0o777)
         image_list = sorted(os.listdir(os.path.join(in_path, type_str)))
         midpoint = int(len(image_list) / 2)
         for index in range(midpoint):
@@ -277,7 +278,6 @@ class AutoStitchFunctions:
         stitched = self.stitch(first, second, ax, crop)
         print(out_fmt)
         tifffile.imwrite(out_fmt, stitched)
-        #tifffile.imsave(out_fmt, stitched)
 
     def stitch(self, first, second, axis, crop):
         h, w = first.shape
