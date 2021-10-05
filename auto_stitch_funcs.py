@@ -337,7 +337,7 @@ class AutoStitchFunctions:
         stitched = self.stitch(first, second, ax, crop)
         tifffile.imwrite(out_fmt, stitched)
 
-    def stitch(first, second, axis, crop):
+    def stitch(self, first, second, axis, crop):
         h, w = first.shape
         if axis > w / 2:
             dx = int(2 * (w - axis) + 0.5)
