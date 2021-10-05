@@ -211,9 +211,7 @@ class AutoStitchFunctions:
                     print("--> " + str(zdir))
 
                     general_inpath = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir)
-                    print("general_inpath: " + general_inpath)
                     general_outpath = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
-                    print("general_outpath: " + general_outpath)
                     rotation_axis = self.ct_axis_dict[str(ct_dir[0])][str(zdir)]
 
                     self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "tomo")
@@ -242,8 +240,8 @@ class AutoStitchFunctions:
         for index in range(midpoint):
             first_path = os.path.join(in_path, type_str, image_list[index])
             second_path = os.path.join(in_path, type_str, image_list[midpoint + index])
-            out_path = os.path.join(out_path, type_str, type_str + "_stitched_{:>04}.tif".format(index))
-            self.open_images_and_stitch(rotation_axis, 0, first_path, second_path, out_path)
+            output_image_path = os.path.join(out_path, type_str, type_str + "_stitched_{:>04}.tif".format(index))
+            self.open_images_and_stitch(rotation_axis, 0, first_path, second_path, output_image_path)
 
     def print_parameters(self):
         """
@@ -276,7 +274,6 @@ class AutoStitchFunctions:
         # We flip the second image before stitching
         second = np.fliplr(second)
         stitched = self.stitch(first, second, ax, crop)
-        print(out_fmt)
         tifffile.imwrite(out_fmt, stitched)
 
     def stitch(self, first, second, axis, crop):
