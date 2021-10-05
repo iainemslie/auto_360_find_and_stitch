@@ -276,6 +276,7 @@ class AutoStitchFunctions:
         # We flip the second image before stitching
         second = np.fliplr(second)
         stitched = self.stitch(first, second, ax, crop)
+        print(out_fmt)
         tifffile.imsave(out_fmt, stitched)
 
     def stitch(self, first, second, axis, crop):
