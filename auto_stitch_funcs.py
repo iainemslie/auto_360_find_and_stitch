@@ -242,7 +242,6 @@ class AutoStitchFunctions:
             first_path = os.path.join(in_path, type_str, image_list[index])
             second_path = os.path.join(in_path, type_str, image_list[midpoint + index])
             out_path = os.path.join(out_path, type_str, type_str + "_stitched_{:>04}.tif".format(index))
-            print(out_path)
             self.open_images_and_stitch(rotation_axis, 0, first_path, second_path, out_path)
 
     def print_parameters(self):
@@ -277,7 +276,8 @@ class AutoStitchFunctions:
         second = np.fliplr(second)
         stitched = self.stitch(first, second, ax, crop)
         print(out_fmt)
-        tifffile.imsave(out_fmt, stitched)
+        tifffile.imwrite(out_fmt, stitched)
+        #tifffile.imsave(out_fmt, stitched)
 
     def stitch(self, first, second, axis, crop):
         h, w = first.shape
