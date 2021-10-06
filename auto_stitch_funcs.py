@@ -90,6 +90,8 @@ class AutoStitchFunctions:
         """
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
+            print("ct_dir: ")
+            print(ct_dir)
             z_axis_dict = {}
             z_list = list(ct_dir[1])
 
