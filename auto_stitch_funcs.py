@@ -24,6 +24,7 @@ class AutoStitchFunctions:
         # Check input directory and find structure
         print("--> Finding CT Directories")
         self.find_ct_dirs()
+        print(self.ct_dirs)
 
         # Get the names of the CT "sample" directories
         self.get_ct_list()
@@ -32,7 +33,7 @@ class AutoStitchFunctions:
         # Create a dict with each CTDir as a key and a list of its subdirectories as the value
         self.get_z_dirs()
         print(self.z_dirs)
-
+        '''
         # TODO - Parallelize the axis search
         # For each ctdir and each zview we compute the axis of rotation
         self.find_images_and_compute_centre()
@@ -43,6 +44,7 @@ class AutoStitchFunctions:
         print("Beginning Stitch")
         # TODO - Parallelize the stitching of images
         self.find_and_stitch_images()
+        '''
 
     def find_ct_dirs(self):
         """
