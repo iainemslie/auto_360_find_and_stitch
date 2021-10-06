@@ -39,8 +39,7 @@ class AutoStitchFunctions:
         print(self.ct_axis_dict)
 
         # For each ctdir and zview we want to stitch all the images using the values in ct_axis_dict
-        print("Output Directory: " + self.parameters['output_dir'])
-        print("Input Directory: " + self.parameters['input_dir'])
+        print("Beginning Stitch")
         # TODO - Parallelize the stitching of images
         self.find_and_stitch_images()
 
@@ -116,11 +115,10 @@ class AutoStitchFunctions:
                     print("--> " + str(zdir))
 
                     # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
-                    axis_list = []
-                    axis_list.append(self.compute_center(zero_degree_image_path, one_eighty_degree_image_path))
-                    axis_list.append(self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path))
-                    axis_list.append(self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path))
-                    axis_list.append(self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path))
+                    axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
+                                 self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
+                                 self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path),
+                                 self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path)]
 
                     # Find the average of 180 degree rotation pairs
                     print(axis_list)
