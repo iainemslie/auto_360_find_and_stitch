@@ -98,7 +98,7 @@ class AutoStitchFunctions:
                     image_list = sorted(os.listdir(tmp_path))
                     num_images = len(image_list)
 
-                    # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode - 
+                    # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode -
                     zero_degree_image_name = image_list[0]
                     one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
                     ninety_degree_image_name = image_list[int(num_images / 4) - 1]
