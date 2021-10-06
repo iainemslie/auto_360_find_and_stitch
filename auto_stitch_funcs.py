@@ -92,6 +92,7 @@ class AutoStitchFunctions:
         for ct_dir in ct_items:
             z_axis_dict = {}
             z_list = list(ct_dir[1])
+
             j = range(len(z_list))
             pool = mp.Pool(processes=mp.cpu_count())
             exec_func = partial(self.find_center_parallel_proc, ct_dir, z_axis_dict, z_list)
@@ -102,6 +103,9 @@ class AutoStitchFunctions:
 
     def find_center_parallel_proc(self, z_axis_dict, ct_dir, z_list, j):
         # Get list of image names in the directory
+        print(z_list)
+        print(ct_dir)
+
         try:
             tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], z_list[j], "tomo")
             image_list = sorted(os.listdir(tmp_path))
