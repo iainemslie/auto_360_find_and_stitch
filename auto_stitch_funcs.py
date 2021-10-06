@@ -91,6 +91,7 @@ class AutoStitchFunctions:
         ct_items = self.z_dirs.items()
         for ct_dir in ct_items:
             z_axis_dict = {}
+            print(list(ct_dir[1]))
             for zdir in ct_dir[1]:
                 # Get list of image names in the directory
                 try:
@@ -214,7 +215,7 @@ class AutoStitchFunctions:
                     rotation_axis = self.ct_axis_dict[str(ct_dir[0])][str(zdir)]
 
                     self.stitch_fdt_general(rotation_axis, in_path, out_path, "tomo")
-                    # TODO : need to account for case where flats, darks, flats2 don't exist
+                    # Need to account for case where flats, darks, flats2 don't exist
                     if os.path.isdir(os.path.join(in_path, "flats")):
                         self.stitch_fdt_general(rotation_axis, in_path, out_path, "flats")
                     if os.path.isdir(os.path.join(in_path, "darks")):
