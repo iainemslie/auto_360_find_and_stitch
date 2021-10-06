@@ -39,9 +39,9 @@ class AutoStitchFunctions:
         print(self.ct_axis_dict)
 
         # For each ctdir and zview we want to stitch all the images using the values in ct_axis_dict
-        print("Beginning Stitch")
+        #print("Beginning Stitch")
         # TODO - Parallelize the stitching of images
-        self.find_and_stitch_images()
+        #self.find_and_stitch_images()
 
 
     def find_ct_dirs(self):
@@ -100,13 +100,13 @@ class AutoStitchFunctions:
             exec_func = partial(self.find_center_parallel_proc, z_axis_dict, ct_dir, z_list)
             pool.map(exec_func, j)
 
+            print("z_axis_dict")
+            print(z_axis_dict)
             # Save all zview-axis pairs to its container CT directory
             self.ct_axis_dict[str(ct_dir[0])] = z_axis_dict
 
     def find_center_parallel_proc(self, z_axis_dict, ct_dir, z_list, j):
         # Get list of image names in the directory
-        print(z_list)
-        print(ct_dir)
 
         try:
             tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], z_list[j], "tomo")
