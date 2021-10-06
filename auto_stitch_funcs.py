@@ -127,12 +127,12 @@ class AutoStitchFunctions:
                     # Save each zview and its axis of rotation value as key-value pair
                     z_axis_dict[str(zdir)] = geometric_mean
                 except NotADirectoryError:
-                    print("Skipped - Not a Directory: " + tmp_path)
+                    print("Skipped - Not a Directory: ")
 
             # Save all zview-axis pairs to its container CT directory
             self.ct_axis_dict[str(ct_dir[0])] = z_axis_dict
 
-    def compute_center(self, zero_degree_image_path: str, one_eighty_degree_image_path: str):
+    def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
         """
         Takes two pairs of images in half-acquisition mode separated by a full 180 degree rotation of the sample
         The images are then flat-corrected and cropped to the overlap region
@@ -165,7 +165,7 @@ class AutoStitchFunctions:
         # We must crop the 180 degree rotation from first pixel column up until overlap
         second_cropped = second[:, :overlap_region]
 
-        cropped_axis = self.compute_rotation_axis(first_cropped, second_cropped)
+        cropped_axis = int(self.compute_rotation_axis(first_cropped, second_cropped))
         return cropped_axis
 
     def get_filtered_filenames(self, path: str, exts=['.tif', '.edf']):
