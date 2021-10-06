@@ -97,7 +97,7 @@ class AutoStitchFunctions:
 
             j = range(len(z_list))
             pool = mp.Pool(processes=mp.cpu_count())
-            exec_func = partial(self.find_center_parallel_proc, ct_dir, z_axis_dict, z_list)
+            exec_func = partial(self.find_center_parallel_proc, z_axis_dict, ct_dir, z_list)
             pool.map(exec_func, j)
 
             # Save all zview-axis pairs to its container CT directory
