@@ -92,7 +92,7 @@ class AutoStitchFunctions:
         for ct_dir in ct_items:
             z_axis_dict = {}
             z_list = list(ct_dir[1])
-            j = range(z_list)
+            j = range(len(z_list))
             pool = mp.Pool(processes=mp.cpu_count())
             exec_func = partial(self.find_center_parallel_proc, ct_dir, z_axis_dict, z_list)
             pool.map(exec_func, j)
