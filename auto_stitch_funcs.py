@@ -44,7 +44,7 @@ class AutoStitchFunctions:
         print("Beginning Stitch")
         # TODO - Parallelize the stitching of images
         self.find_and_stitch_images()
-        '''
+        '''''
 
     def find_ct_dirs(self):
         """
