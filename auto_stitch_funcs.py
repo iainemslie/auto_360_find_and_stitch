@@ -211,15 +211,18 @@ class AutoStitchFunctions:
                 try:
                     print("--> " + str(zdir))
 
-                    general_inpath = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir)
-                    general_outpath = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
+                    in_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir)
+                    out_path = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
                     rotation_axis = self.ct_axis_dict[str(ct_dir[0])][str(zdir)]
 
-                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "tomo")
+                    self.stitch_fdt_general(rotation_axis, in_path, out_path, "tomo")
                     # TODO : need to account for case where flats, darks, flats2 don't exist
-                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "flats")
-                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "darks")
-                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "flats2")
+                    if os.path.isdir(os.path.join(in_path, "flats")):
+                        self.stitch_fdt_general(rotation_axis, in_path, out_path, "flats")
+                    if os.path.isdir(os.path.join(in_path, "darks")):
+                        self.stitch_fdt_general(rotation_axis, in_path, out_path, "darks")
+                    if os.path.isdir(os.path.join(in_path, "flats2")):
+                        self.stitch_fdt_general(rotation_axis, in_path, out_path, "flats2")
 
                     print("Axis of rotation: " + str(rotation_axis))
 
