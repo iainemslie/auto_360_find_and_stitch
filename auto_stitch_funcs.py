@@ -5,6 +5,7 @@ import multiprocessing as mp
 from functools import partial
 from scipy.stats import gmean
 
+
 class AutoStitchFunctions:
     def __init__(self, parameters):
         self.lvl0 = os.path.abspath(parameters["input_dir"])
@@ -35,14 +36,12 @@ class AutoStitchFunctions:
         # TODO - Parallelize the axis search
         # For each ctdir and each zview we compute the axis of rotation
         self.find_images_and_compute_centre()
-        print("==> Found the following zviews and their corresponding axis of rotation <==")
+        print("==> Found the following z-views and their corresponding axis of rotation <==")
         print(self.ct_axis_dict)
 
         # For each ctdir and zview we want to stitch all the images using the values in ct_axis_dict
-        print("Output Directory: " + self.parameters['output_dir'])
-        print("Input Directory: " + self.parameters['input_dir'])
+        # TODO - Parallelize the stitching of images
         self.find_and_stitch_images()
-
 
     def find_ct_dirs(self):
         """
@@ -115,11 +114,10 @@ class AutoStitchFunctions:
                     print("--> " + str(zdir))
 
                     # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
-                    axis_list = []
-                    axis_list.append(self.compute_center(zero_degree_image_path, one_eighty_degree_image_path))
-                    axis_list.append(self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path))
-                    axis_list.append(self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path))
-                    axis_list.append(self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path))
+                    axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
+                                 self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
+                                 self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path),
+                                 self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path)]
 
                     # Find the average of 180 degree rotation pairs
                     print(axis_list)
@@ -134,7 +132,7 @@ class AutoStitchFunctions:
             # Save all zview-axis pairs to its container CT directory
             self.ct_axis_dict[str(ct_dir[0])] = z_axis_dict
 
-    def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
+    def compute_center(self, zero_degree_image_path: str, one_eighty_degree_image_path: str):
         """
         Takes two pairs of images in half-acquisition mode separated by a full 180 degree rotation of the sample
         The images are then flat-corrected and cropped to the overlap region
@@ -164,13 +162,13 @@ class AutoStitchFunctions:
         overlap_region = int(2 * int(self.parameters['overlap_region']))
         # We must crop the first image from first pixel column up until overlap
         first_cropped = first[:, :overlap_region]
-        # We must crop the 180 degree rotation (which has been flipped 180) from width-overlap until last pixel column
+        # We must crop the 180 degree rotation from first pixel column up until overlap
         second_cropped = second[:, :overlap_region]
 
         cropped_axis = self.compute_rotation_axis(first_cropped, second_cropped)
         return cropped_axis
 
-    def get_filtered_filenames(self, path, exts=['.tif', '.edf']):
+    def get_filtered_filenames(self, path: str, exts=['.tif', '.edf']):
         result = []
 
         try:
@@ -210,22 +208,25 @@ class AutoStitchFunctions:
                 try:
                     print("--> " + str(zdir))
 
-                    general_inpath = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir)
-                    general_outpath = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
+                    in_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir)
+                    out_path = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
                     rotation_axis = self.ct_axis_dict[str(ct_dir[0])][str(zdir)]
 
-                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "tomo")
-                    # TODO : need to account for case where flats, darks, flats2 don't exist
-                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "flats")
-                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "darks")
-                    self.stitch_fdt_general(rotation_axis, general_inpath, general_outpath, "flats2")
+                    self.stitch_fdt(rotation_axis, in_path, out_path, "tomo")
+                    # Bypass flats/darks/flats2 if they don't exist
+                    if os.path.isdir(os.path.join(in_path, "flats")):
+                        self.stitch_fdt(rotation_axis, in_path, out_path, "flats")
+                    if os.path.isdir(os.path.join(in_path, "darks")):
+                        self.stitch_fdt(rotation_axis, in_path, out_path, "darks")
+                    if os.path.isdir(os.path.join(in_path, "flats2")):
+                        self.stitch_fdt(rotation_axis, in_path, out_path, "flats2")
 
                     print("Axis of rotation: " + str(rotation_axis))
 
                 except NotADirectoryError as e:
                     print("Skipped - Not a Directory: " + e.filename)
 
-    def stitch_fdt_general(self, rotation_axis, in_path, out_path, type_str):
+    def stitch_fdt(self, rotation_axis: int, in_path: str, out_path: str, type_str: str):
         """
         Finds images in tomo, flats, darks, flats2 directories corresponding to 180 degree pairs
         The first image is stitched with the middle image and so on by using the index and midpoint
@@ -456,7 +457,6 @@ class AutoStitchFunctions:
                     # Save the subtracted image
                     tifffile.imwrite(subtracted_image_path, subtracted_image)
     '''
-
 
     '''
     def stitch_fdt(self, rotation_axis, tomo_path, flats_path, darks_path, flats2_path, output_path):
