@@ -184,7 +184,7 @@ class AutoStitchFunctions:
                 out_path = os.path.join(self.parameters['output_dir'], diff_path)
                 print(out_path)
                 rotation_axis = self.ct_axis_dict[z_dir_path]
-                '''
+
                 self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "tomo")
                 # TODO : need to account for case where flats, darks, flats2 don't exist
                 if os.path.isdir(os.path.join(z_dir_path, "flats")):
@@ -195,7 +195,7 @@ class AutoStitchFunctions:
                     self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "flats2")
 
                 print("Axis of rotation: " + str(rotation_axis))
-                '''
+
             except NotADirectoryError as e:
                 print("Skipped - Not a Directory: " + e.filename)
 
