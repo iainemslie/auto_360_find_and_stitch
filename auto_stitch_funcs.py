@@ -60,7 +60,7 @@ class AutoStitchFunctions:
         """
         index = range(len(self.ct_dirs))
         pool = mp.Pool(processes=mp.cpu_count())
-        exec_func = partial(self.find_center_parallel)
+        exec_func = partial(self.find_center_parallel_proc)
         pool.map(exec_func, index)
 
     def find_center_parallel_proc(self, index):
