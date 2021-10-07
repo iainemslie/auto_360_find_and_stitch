@@ -59,8 +59,8 @@ class AutoStitchFunctions:
         index = range(len(self.ct_dirs))
         pool = mp.Pool(processes=mp.cpu_count())
         exec_func = partial(self.find_center_parallel_proc)
-        index_and_axis = [pool.map(exec_func, index)]
-        print(index_and_axis)
+        temp_axis_dict = [pool.map(exec_func, index)]
+        print(temp_axis_dict)
 
     def find_center_parallel_proc(self, index):
         """
@@ -102,10 +102,10 @@ class AutoStitchFunctions:
             geometric_mean = round(gmean(axis_list))
             print("Geometric Mean: " + str(geometric_mean))
             # Save each zview and its axis of rotation value as key-value pair
-            self.ct_axis_dict[zview_path] = geometric_mean
+            temp_axis_dict = {zview_path: geometric_mean}
 
-            temp_tuple = (index, geometric_mean)
-            return temp_tuple
+            #temp_tuple = (index, geometric_mean)
+            return temp_axis_dict
 
         except NotADirectoryError:
             print("Skipped - Not a Directory: " + tmp_path)
