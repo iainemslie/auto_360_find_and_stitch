@@ -2,6 +2,7 @@ import os
 import tifffile
 import numpy as np
 import multiprocessing as mp
+import time
 from functools import partial
 from scipy.stats import gmean
 
@@ -31,9 +32,12 @@ class AutoStitchFunctions:
             print(str(key) + " : " + str(self.ct_axis_dict[key]))
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
-        print("Beginning Stitch")
-        # TODO - Parallelize the stitching of images
+        print("Stitching Images...")
+        start_time = time.perf_counter()
         self.find_and_stitch_images()
+        end_time = time.perf_counter()
+        result_time = end_time - start_time
+        print("Stitching took: " + str(result_time) + " seconds")
 
 
     def find_ct_dirs(self):
@@ -175,7 +179,9 @@ class AutoStitchFunctions:
         index = range(len(self.ct_dirs))
         pool = mp.Pool(processes=mp.cpu_count())
         exec_func = partial(self.find_and_stitch_parallel_proc)
-        pool.map(exec_func, index)
+        # Try imap_unordered() as see if it is faster - with chunksize len(self.ct_dir) / mp.cpu_count()
+        pool.imap_unordered(exec_func, index, int(len(self.ct_dir) / mp.cpu_count()))
+        #pool.map(exec_func, index)
 
     def find_and_stitch_parallel_proc(self, index):
         z_dir_path = self.ct_dirs[index]
