@@ -54,9 +54,7 @@ class AutoStitchFunctions:
 
     def find_images_and_compute_centre(self):
         """
-        Finds the images corresponding to the 0-180, 90-270, 180-360 degree pairs
-        These are used to compute the average axis of rotation for each zview in a ct directory
-        :return: Result is saved to self.ct_axis_dict
+        We use multiprocessing across all CPU cores to determine the axis values for each zview in parallel
         """
         index = range(len(self.ct_dirs))
         pool = mp.Pool(processes=mp.cpu_count())
@@ -104,7 +102,7 @@ class AutoStitchFunctions:
             print("Geometric Mean: " + str(geometric_mean))
 
             # Save each zview and its axis of rotation value as key-value pair
-            self.ct_axis_dict[str(zview_path)] = geometric_mean
+            self.ct_axis_dict[zview_path] = geometric_mean
         except NotADirectoryError:
             print("Skipped - Not a Directory: " + tmp_path)
 
