@@ -10,8 +10,6 @@ class AutoStitchFunctions:
     def __init__(self, parameters):
         self.lvl0 = os.path.abspath(parameters["input_dir"])
         self.ct_dirs = []
-        self.ct_list = []
-        self.z_dirs = {}
         self.ct_axis_dict = {}
         self.parameters = parameters
 
@@ -24,13 +22,14 @@ class AutoStitchFunctions:
         # Check input directory and find structure
         print("--> Finding CT Directories")
         self.find_ct_dirs()
-        print(self.ct_dirs)
+        #print(self.ct_dirs)
 
         # For each zview we compute the axis of rotation
+        print("--> Finding Axis of Rotation for each Z-View")
         self.find_images_and_compute_centre()
         print("==> Found the following z-views and their corresponding axis of rotation <==")
         for key in self.ct_axis_dict:
-            print(key, self.ct_axis_dictkey[key])
+            print(key, self.ct_axis_dict[key])
         '''
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("Beginning Stitch")
