@@ -182,7 +182,7 @@ class AutoStitchFunctions:
         pool = mp.Pool(processes=mp.cpu_count())
         exec_func = partial(self.find_and_stitch_parallel_proc)
         # Try imap_unordered() as see if it is faster - with chunksize len(self.ct_dir) / mp.cpu_count()
-        pool.imap_unordered(exec_func, index, int(len(self.ct_dir) / mp.cpu_count()))
+        pool.imap_unordered(exec_func, index, int(len(self.ct_dirs) / mp.cpu_count()))
         #pool.map(exec_func, index)
 
     def find_and_stitch_parallel_proc(self, index):
