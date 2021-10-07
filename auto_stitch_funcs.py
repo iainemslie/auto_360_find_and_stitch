@@ -28,7 +28,7 @@ class AutoStitchFunctions:
         self.find_images_and_compute_centre()
         print("==> Found the following z-views and their corresponding axis of rotation <==")
         for key in self.ct_axis_dict:
-            print(key + " : " + self.ct_axis_dict[key])
+            print(str(key) + " : " + str(self.ct_axis_dict[key]))
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("Beginning Stitch")
@@ -179,10 +179,11 @@ class AutoStitchFunctions:
 
                 in_path = os.path.join(self.parameters['input_dir'], z_dir_path)
                 # Update out_path to subtract z-dir-path from initial input directory
-                out_path = os.path.relpath(self.parameters['input_dir'], z_dir_path)
+                diff_path = os.path.relpath(self.parameters['input_dir'], z_dir_path)
+                out_path = os.path.join(self.parameters['output_dir'], diff_path)
                 print(in_path)
+                print(diff_path)
                 print(out_path)
-                #out_path = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
                 rotation_axis = self.ct_axis_dict[z_dir_path]
                 '''
                 self.stitch_fdt_general(rotation_axis, in_path, out_path, "tomo")
