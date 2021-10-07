@@ -172,32 +172,35 @@ class AutoStitchFunctions:
         return (width / 2.0 + center) / 2
 
     def find_and_stitch_images(self):
-        for z_dir_path in self.ct_dirs:
-            # Get list of image names in the directory
-            try:
-                print("--> " + str(z_dir_path))
+        index = range(len(self.ct_dirs))
+        pool = mp.Pool(processes=mp.cpu_count())
+        exec_func = partial(self.find_and_stitch_parallel_proc)
+        pool.map(exec_func, index)
 
-                # Want to maintain directory structure for output so we subtract the output-path from z_dir_path
-                # Then we append this to the output_dir path
-                diff_path = os.path.relpath(z_dir_path, self.parameters['input_dir'])
-                print(diff_path)
-                out_path = os.path.join(self.parameters['output_dir'], diff_path)
-                print(out_path)
-                rotation_axis = self.ct_axis_dict[z_dir_path]
+    def find_and_stitch_parallel_proc(self, index):
+        z_dir_path = self.ct_dirs[index]
+        # Get list of image names in the directory
+        try:
+            # Want to maintain directory structure for output so we subtract the output-path from z_dir_path
+            # Then we append this to the output_dir path
+            diff_path = os.path.relpath(z_dir_path, self.parameters['input_dir'])
+            out_path = os.path.join(self.parameters['output_dir'], diff_path)
+            rotation_axis = self.ct_axis_dict[z_dir_path]
 
-                self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "tomo")
-                # TODO : need to account for case where flats, darks, flats2 don't exist
-                if os.path.isdir(os.path.join(z_dir_path, "flats")):
-                    self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "flats")
-                if os.path.isdir(os.path.join(z_dir_path, "darks")):
-                    self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "darks")
-                if os.path.isdir(os.path.join(z_dir_path, "flats2")):
-                    self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "flats2")
+            self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "tomo")
+            # Need to account for case where flats, darks, flats2 don't exist
+            if os.path.isdir(os.path.join(z_dir_path, "flats")):
+                self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "flats")
+            if os.path.isdir(os.path.join(z_dir_path, "darks")):
+                self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "darks")
+            if os.path.isdir(os.path.join(z_dir_path, "flats2")):
+                self.stitch_fdt_general(rotation_axis, z_dir_path, out_path, "flats2")
 
-                print("Axis of rotation: " + str(rotation_axis))
+            print("--> " + str(z_dir_path))
+            print("Axis of rotation: " + str(rotation_axis))
 
-            except NotADirectoryError as e:
-                print("Skipped - Not a Directory: " + e.filename)
+        except NotADirectoryError as e:
+            print("Skipped - Not a Directory: " + e.filename)
 
 
     def stitch_fdt_general(self, rotation_axis, in_path, out_path, type_str):
