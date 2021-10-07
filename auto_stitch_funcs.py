@@ -55,7 +55,7 @@ class AutoStitchFunctions:
             for name in dirs:
                 if name == "tomo":
                     self.ct_dirs.append(root)
-        self.ct_dirs = list(set(self.ct_dirs))
+        self.ct_dirs = sorted(list(set(self.ct_dirs)))
 
     def get_ct_list(self):
         """
