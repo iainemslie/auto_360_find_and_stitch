@@ -3,6 +3,7 @@ import tifffile
 import numpy as np
 import multiprocessing as mp
 import time
+import datetime
 from functools import partial
 from scipy.stats import gmean
 
@@ -37,7 +38,8 @@ class AutoStitchFunctions:
         self.find_and_stitch_images()
         end_time = time.perf_counter()
         result_time = end_time - start_time
-        print("Stitching took: " + str(result_time) + " seconds")
+        print("Finished Stitching!")
+        print("Stitching took: " + str(datetime.timedelta(seconds=result_time)))
 
 
     def find_ct_dirs(self):
