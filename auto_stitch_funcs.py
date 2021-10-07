@@ -22,20 +22,19 @@ class AutoStitchFunctions:
         # Check input directory and find structure
         print("--> Finding CT Directories")
         self.find_ct_dirs()
-        #print(self.ct_dirs)
 
         # For each zview we compute the axis of rotation
         print("--> Finding Axis of Rotation for each Z-View")
         self.find_images_and_compute_centre()
         print("==> Found the following z-views and their corresponding axis of rotation <==")
         for key in self.ct_axis_dict:
-            print(key, self.ct_axis_dict[key])
-        '''
+            print(key + " : " + self.ct_axis_dict[key])
+
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("Beginning Stitch")
         # TODO - Parallelize the stitching of images
         self.find_and_stitch_images()
-        '''''
+
 
     def find_ct_dirs(self):
         """
@@ -51,6 +50,7 @@ class AutoStitchFunctions:
     def find_images_and_compute_centre(self):
         """
         We use multiprocessing across all CPU cores to determine the axis values for each zview in parallel
+        We get a dictionary of z-directory and axis of rotation key-value pairs in self.ct_axis_dict at the end
         """
         index = range(len(self.ct_dirs))
         pool = mp.Pool(processes=mp.cpu_count())
@@ -172,31 +172,33 @@ class AutoStitchFunctions:
         return (width / 2.0 + center) / 2
 
     def find_and_stitch_images(self):
-        ct_items = self.z_dirs.items()
-        for ct_dir in ct_items:
-            print("=> " + ct_dir[0])
-            for zdir in ct_dir[1]:
-                # Get list of image names in the directory
-                try:
-                    print("--> " + str(zdir))
+        for z_dir_path in self.ct_dirs:
+            # Get list of image names in the directory
+            try:
+                print("--> " + str(z_dir_path))
 
-                    in_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir)
-                    out_path = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
-                    rotation_axis = self.ct_axis_dict[str(ct_dir[0])][str(zdir)]
+                in_path = os.path.join(self.parameters['input_dir'], z_dir_path)
+                # Update out_path to subtract z-dir-path from initial input directory
+                out_path = os.path.relpath(self.parameters['input_dir'], z_dir_path)
+                print(in_path)
+                print(out_path)
+                #out_path = os.path.join(self.parameters['output_dir'], ct_dir[0], zdir)
+                rotation_axis = self.ct_axis_dict[z_dir_path]
+                '''
+                self.stitch_fdt_general(rotation_axis, in_path, out_path, "tomo")
+                # TODO : need to account for case where flats, darks, flats2 don't exist
+                if os.path.isdir(os.path.join(in_path, "flats")):
+                    self.stitch_fdt_general(rotation_axis, in_path, out_path, "flats")
+                if os.path.isdir(os.path.join(in_path, "darks")):
+                    self.stitch_fdt_general(rotation_axis, in_path, out_path, "darks")
+                if os.path.isdir(os.path.join(in_path, "flats2")):
+                    self.stitch_fdt_general(rotation_axis, in_path, out_path, "flats2")
 
-                    self.stitch_fdt_general(rotation_axis, in_path, out_path, "tomo")
-                    # TODO : need to account for case where flats, darks, flats2 don't exist
-                    if os.path.isdir(os.path.join(in_path, "flats")):
-                        self.stitch_fdt_general(rotation_axis, in_path, out_path, "flats")
-                    if os.path.isdir(os.path.join(in_path, "darks")):
-                        self.stitch_fdt_general(rotation_axis, in_path, out_path, "darks")
-                    if os.path.isdir(os.path.join(in_path, "flats2")):
-                        self.stitch_fdt_general(rotation_axis, in_path, out_path, "flats2")
+                print("Axis of rotation: " + str(rotation_axis))
+                '''
+            except NotADirectoryError as e:
+                print("Skipped - Not a Directory: " + e.filename)
 
-                    print("Axis of rotation: " + str(rotation_axis))
-
-                except NotADirectoryError as e:
-                    print("Skipped - Not a Directory: " + e.filename)
 
     def stitch_fdt_general(self, rotation_axis, in_path, out_path, type_str):
         """
