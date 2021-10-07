@@ -28,10 +28,11 @@ class AutoStitchFunctions:
 
         # For each zview we compute the axis of rotation
         self.find_images_and_compute_centre()
-        print("==> Found the following zviews and their corresponding axis of rotation <==")
-        print(self.ct_axis_dict)
+        print("==> Found the following z-views and their corresponding axis of rotation <==")
+        for key in self.ct_axis_dict:
+            print(key, self.ct_axis_dictkey[key])
         '''
-        # For each ctdir and zview we want to stitch all the images using the values in ct_axis_dict
+        # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("Beginning Stitch")
         # TODO - Parallelize the stitching of images
         self.find_and_stitch_images()
@@ -40,7 +41,7 @@ class AutoStitchFunctions:
     def find_ct_dirs(self):
         """
         Walks directories rooted at "Input Directory" location
-        Appends their absolute path to ctdir if they contain a directory with same name as "tomo" entry in GUI
+        Appends their absolute path to ct-dir if they contain a directory with same name as "tomo" entry in GUI
         """
         for root, dirs, files in os.walk(self.lvl0):
             for name in dirs:
@@ -87,8 +88,6 @@ class AutoStitchFunctions:
             two_seventy_degree_image_path = os.path.join(tmp_path, two_seventy_degree_image_name)
             three_sixty_degree_image_path = os.path.join(tmp_path, three_sixty_degree_image_name)
 
-            print("--> " + str(zview_path))
-
             # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
             axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
                          self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
@@ -96,13 +95,12 @@ class AutoStitchFunctions:
                          self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path)]
 
             # Find the average of 180 degree rotation pairs
+            print("--> " + str(zview_path))
             print(axis_list)
             geometric_mean = round(gmean(axis_list))
             print("Geometric Mean: " + str(geometric_mean))
-            # Save each zview and its axis of rotation value as key-value pair
-            temp_axis_dict = {}
-            temp_axis_dict[zview_path] = geometric_mean
-            return temp_axis_dict
+            # Return each zview and its axis of rotation value as key-value pair
+            return {zview_path: geometric_mean}
 
         except NotADirectoryError:
             print("Skipped - Not a Directory: " + tmp_path)
