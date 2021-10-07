@@ -29,7 +29,6 @@ class AutoStitchFunctions:
         self.ct_axis_dict = dict.fromkeys(self.ct_dirs)
         print(self.ct_axis_dict)
 
-
         # TODO - Parallelize the axis search
         # For each zview we compute the axis of rotation
         self.find_images_and_compute_centre()
@@ -59,10 +58,11 @@ class AutoStitchFunctions:
         """
         index = range(len(self.ct_dirs))
         pool = mp.Pool(processes=mp.cpu_count())
-        exec_func = partial(self.find_center_parallel_proc, self.ct_axis_dict)
-        pool.map(exec_func, index)
+        exec_func = partial(self.find_center_parallel_proc)
+        index_and_axis = [pool.map(exec_func, index)]
+        print(index_and_axis)
 
-    def find_center_parallel_proc(self, ct_axis_dict, index):
+    def find_center_parallel_proc(self, index):
         """
         Finds the images corresponding to the 0-180, 90-270, 180-360 degree pairs
         These are used to compute the average axis of rotation for each zview in a ct directory
@@ -102,7 +102,10 @@ class AutoStitchFunctions:
             geometric_mean = round(gmean(axis_list))
             print("Geometric Mean: " + str(geometric_mean))
             # Save each zview and its axis of rotation value as key-value pair
-            ct_axis_dict[zview_path] = geometric_mean
+            self.ct_axis_dict[zview_path] = geometric_mean
+
+            temp_tuple = (index, geometric_mean)
+            return temp_tuple
 
         except NotADirectoryError:
             print("Skipped - Not a Directory: " + tmp_path)
