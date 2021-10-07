@@ -29,17 +29,8 @@ class AutoStitchFunctions:
         self.ct_axis_dict = dict.fromkeys(self.ct_dirs)
         print(self.ct_axis_dict)
 
-        # Get the names of the CT "sample" directories
-        '''
-        self.get_ct_list()
-        print(self.ct_list)
-
-        # Create a dict with each CTDir as a key and a list of its subdirectories as the value
-        self.get_z_dirs()
-        print(self.z_dirs)
-        '''
         # TODO - Parallelize the axis search
-        # For each ctdir and each zview we compute the axis of rotation
+        # For each zview we compute the axis of rotation
         self.find_images_and_compute_centre()
         print("==> Found the following zviews and their corresponding axis of rotation <==")
         print(self.ct_axis_dict)
@@ -60,33 +51,6 @@ class AutoStitchFunctions:
                 if name == "tomo":
                     self.ct_dirs.append(root)
         self.ct_dirs = sorted(list(set(self.ct_dirs)))
-
-    def get_ct_list(self):
-        """
-        Creates a list containing the "sample" or CT directory names
-        """
-        if len(self.ct_dirs) == 0:
-            print("--> No valid CT Directories found - Please select a different input directory")
-        else:
-            for path in self.ct_dirs:
-                ct_path, z_dir = os.path.split(path)
-                parent_path, ct_name = os.path.split(ct_path)
-                self.ct_list.append(ct_name)
-            self.ct_list = sorted(list(set(self.ct_list)))
-
-    def get_z_dirs(self):
-        """
-        Creates a dictionary where each key is a CTDir and its value is a list of its subdirectories
-        """
-        try:
-            for ct_dir in self.ct_list:
-                zdir_list = os.listdir(self.parameters['input_dir'] + "/" + ct_dir)
-                for zdir in zdir_list:
-                    if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
-                        zdir_list.remove(zdir)
-                self.z_dirs[ct_dir] = sorted(zdir_list)
-        except FileNotFoundError:
-            print("File Not Found Error")
 
     def find_images_and_compute_centre(self):
         """
@@ -115,7 +79,7 @@ class AutoStitchFunctions:
                 two_seventy_degree_image_path = os.path.join(tmp_path, two_seventy_degree_image_name)
                 three_sixty_degree_image_path = os.path.join(tmp_path, three_sixty_degree_image_name)
 
-                #print("--> " + str(zdir))
+                print("--> " + str(zview_path))
 
                 # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
                 axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
@@ -497,4 +461,33 @@ class AutoStitchFunctions:
             second_flat2_path = os.path.join(flats2_path, flats2_image_list[flat2_index + flat2_midpoint])
             flat2_out_path = os.path.join(output_path, "flats2", "Flat2_stitched_{:>04}.tif".format(flat2_index))
             self.open_images_and_stitch(rotation_axis, 0, first_flat2_path, second_flat2_path, flat2_out_path)
+    '''
+    '''
+    
+        def get_ct_list(self):
+            """
+            Creates a list containing the "sample" or CT directory names
+            """
+            if len(self.ct_dirs) == 0:
+                print("--> No valid CT Directories found - Please select a different input directory")
+            else:
+                for path in self.ct_dirs:
+                    ct_path, z_dir = os.path.split(path)
+                    parent_path, ct_name = os.path.split(ct_path)
+                    self.ct_list.append(ct_name)
+                self.ct_list = sorted(list(set(self.ct_list)))
+    
+        def get_z_dirs(self):
+            """
+            Creates a dictionary where each key is a CTDir and its value is a list of its subdirectories
+            """
+            try:
+                for ct_dir in self.ct_list:
+                    zdir_list = os.listdir(self.parameters['input_dir'] + "/" + ct_dir)
+                    for zdir in zdir_list:
+                        if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
+                            zdir_list.remove(zdir)
+                    self.z_dirs[ct_dir] = sorted(zdir_list)
+            except FileNotFoundError:
+                print("File Not Found Error")
     '''
