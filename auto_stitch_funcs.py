@@ -239,11 +239,9 @@ class AutoStitchFunctions:
         print("======================== Parameters ========================")
         print("Input Directory: " + self.parameters['input_dir'])
         print("Output Directory: " + self.parameters['output_dir'])
-        print("Temp Directory: " + self.parameters['temp_dir'])
         print("Flats Directory: " + self.parameters['flats_dir'])
         print("Darks Directory: " + self.parameters['darks_dir'])
         print("Overlap Region Size: " + self.parameters['overlap_region'])
-        print("Number of Steps: " + self.parameters['steps'])
         print("Axis on left: " + self.parameters['axis_on_left'])
         print("============================================================")
 
