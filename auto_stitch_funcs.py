@@ -34,12 +34,12 @@ class AutoStitchFunctions:
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("Stitching Images...")
-        start_time = time.perf_counter()
+        #start_time = time.perf_counter()
         self.find_and_stitch_images()
-        end_time = time.perf_counter()
-        result_time = end_time - start_time
-        print("Finished Stitching!")
-        print("Stitching took: " + str(datetime.timedelta(seconds=result_time)))
+        #end_time = time.perf_counter()
+        #result_time = end_time - start_time
+        #print("Finished Stitching!")
+        #print("Stitching took: " + str(datetime.timedelta(seconds=result_time)))
 
 
     def find_ct_dirs(self):
@@ -182,6 +182,7 @@ class AutoStitchFunctions:
         pool = mp.Pool(processes=mp.cpu_count())
         exec_func = partial(self.find_and_stitch_parallel_proc)
         # Try imap_unordered() as see if it is faster - with chunksize len(self.ct_dir) / mp.cpu_count()
+        #TODO : Try using pool.map or pool.imap_unordered and compare times
         pool.imap_unordered(exec_func, index, int(len(self.ct_dirs) / mp.cpu_count()))
         #pool.map(exec_func, index)
 

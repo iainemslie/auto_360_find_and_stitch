@@ -4,7 +4,7 @@ import logging
 import shutil
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QFileDialog, QCheckBox,\
-                            QMessageBox
+                            QMessageBox, QGroupBox
 from auto_stitch_funcs import AutoStitchFunctions
 
 
@@ -30,10 +30,8 @@ class AutoStitchGUI(QWidget):
         self.output_entry = QLineEdit()
         self.output_entry.textChanged.connect(self.set_output_entry)
 
-        self.temp_button = QPushButton("Select Temp Path")
-        self.temp_button.clicked.connect(self.temp_button_pressed)
-        self.temp_entry = QLineEdit()
-        self.temp_entry.textChanged.connect(self.set_temp_entry)
+        self.flats_darks_group = QGroupBox("Use Common Set of Flats and Darks")
+        self.flats_darks_group.clicked.connect(self.set_flats_darks_group)
 
         self.flats_button = QPushButton("Select Flats Path")
         self.flats_button.clicked.connect(self.flats_button_pressed)
@@ -49,17 +47,13 @@ class AutoStitchGUI(QWidget):
         self.overlap_region_entry = QLineEdit()
         self.overlap_region_entry.textChanged.connect(self.set_overlap_region_entry)
 
-        self.steps_label = QLabel("Number of steps")
-        self.steps_entry = QLineEdit()
-        self.steps_entry.textChanged.connect(self.set_steps_entry)
-
         self.left_hand_checkbox = QCheckBox("Is the rotation axis on the left-hand side of the image?")
         self.left_hand_checkbox.stateChanged.connect(self.set_left_hand_checkbox)
 
         self.help_button = QPushButton("Help")
         self.help_button.clicked.connect(self.help_button_pressed)
 
-        self.delete_temp_button = QPushButton("Delete Temp Directory")
+        self.delete_temp_button = QPushButton("Delete Output Directory")
         self.delete_temp_button.clicked.connect(self.delete_button_pressed)
 
         self.stitch_button = QPushButton("Stitch")
@@ -77,36 +71,34 @@ class AutoStitchGUI(QWidget):
         layout.addWidget(self.input_entry, 0, 2, 1, 4)
         layout.addWidget(self.output_button, 1, 0, 1, 2)
         layout.addWidget(self.output_entry, 1, 2, 1, 4)
-        layout.addWidget(self.temp_button, 2, 0, 1, 2)
-        layout.addWidget(self.temp_entry, 2, 2, 1, 4)
-        layout.addWidget(self.flats_button, 3, 0, 1, 2)
-        layout.addWidget(self.flats_entry, 3, 2, 1, 4)
-        layout.addWidget(self.darks_button, 4, 0, 1, 2)
-        layout.addWidget(self.darks_entry, 4, 2, 1, 4)
-        layout.addWidget(self.overlap_region_label, 5, 0)
-        layout.addWidget(self.overlap_region_entry, 5, 1)
-        layout.addWidget(self.steps_label, 5, 2)
-        layout.addWidget(self.steps_entry, 5, 3)
-        layout.addWidget(self.left_hand_checkbox, 6, 0, 1, 4)
-        layout.addWidget(self.help_button, 7, 0, 1, 2)
-        layout.addWidget(self.delete_temp_button, 7, 2, 1, 1)
-        layout.addWidget(self.stitch_button, 7, 3, 1, 3)
+
+        self.flats_darks_group.setCheckable(True)
+        self.flats_darks_group.setChecked(False)
+        flats_darks_layout = QGridLayout()
+        flats_darks_layout.addWidget(self.flats_button, 0, 0, 1, 2)
+        flats_darks_layout.addWidget(self.flats_entry, 0, 2, 1, 2)
+        flats_darks_layout.addWidget(self.darks_button, 1, 0, 1, 2)
+        flats_darks_layout.addWidget(self.darks_entry, 1, 2, 1, 2)
+        self.flats_darks_group.setLayout(flats_darks_layout)
+        layout.addWidget(self.flats_darks_group, 2, 0, 1, 4)
+
+        layout.addWidget(self.overlap_region_label, 3, 2)
+        layout.addWidget(self.overlap_region_entry, 3, 3)
+        layout.addWidget(self.left_hand_checkbox, 3, 0, 1, 2)
+        layout.addWidget(self.help_button, 4, 0, 1, 2)
+        layout.addWidget(self.delete_temp_button, 4, 2, 1, 1)
+        layout.addWidget(self.stitch_button, 4, 3, 1, 3)
         self.setLayout(layout)
 
     def init_values(self):
         self.input_entry.setText("...enter input directory")
         self.output_entry.setText("...enter output directory")
-        temp_dir = "/data/tmp-auto-stitch"
-        self.temp_entry.setText(temp_dir)
-        self.parameters['temp_dir'] = temp_dir
         self.flats_entry.setText("...enter flats directory")
         self.parameters['flats_dir'] = ""
         self.darks_entry.setText("...enter darks directory")
         self.parameters['darks_dir'] = ""
         self.overlap_region_entry.setText("770")
         self.parameters['overlap_region'] = "770"
-        self.steps_entry.setText("1")
-        self.parameters['steps'] = "1"
         self.left_hand_checkbox.setChecked(False)
         self.parameters['axis_on_left'] = str(False)
 
@@ -132,16 +124,8 @@ class AutoStitchGUI(QWidget):
         logging.debug("Output Entry: " + str(self.output_entry.text()))
         self.parameters['output_dir'] = str(self.output_entry.text())
 
-    def temp_button_pressed(self):
-        logging.debug("Temp Button Pressed")
-        dir_explore = QFileDialog(self)
-        temp_dir = dir_explore.getExistingDirectory()
-        self.temp_entry.setText(temp_dir)
-        self.parameters['temp_dir'] = temp_dir
-
-    def set_temp_entry(self):
-        logging.debug("Temp Entry: " + str(self.temp_entry.text()))
-        self.parameters['temp_dir'] = str(self.temp_entry.text())
+    def set_flats_darks_group(self):
+        logging.debug("Use Common Flats/Darks: " + str(self.flats_darks_group.isChecked()))
 
     def flats_button_pressed(self):
         logging.debug("Flats Button Pressed")
@@ -169,10 +153,6 @@ class AutoStitchGUI(QWidget):
         logging.debug("Overlap Region: " + str(self.overlap_region_entry.text()))
         self.parameters['overlap_region'] = str(self.overlap_region_entry.text())
 
-    def set_steps_entry(self):
-        logging.debug("Steps: " + str(self.steps_entry.text()))
-        self.parameters['steps'] = str(self.steps_entry.text())
-
     def set_left_hand_checkbox(self):
         logging.debug("Rotation axis on left-hand-side checkbox: " + str(self.left_hand_checkbox.isChecked()))
         self.parameters['axis_on_left'] = str(self.left_hand_checkbox.isChecked())
@@ -183,16 +163,16 @@ class AutoStitchGUI(QWidget):
         QMessageBox.information(self, "Help", h)
 
     def delete_button_pressed(self):
-        logging.debug("Delete Temp Directory Button Pressed")
+        logging.debug("Delete Output Directory Button Pressed")
         delete_dialog = QMessageBox.question(self, 'Quit', 'Are you sure you want to delete the temporary directory?',
                                              QMessageBox.Yes | QMessageBox.No)
         if delete_dialog == QMessageBox.Yes:
             try:
-                print("Deleting: " + self.parameters['temp_dir'] + " ...")
-                shutil.rmtree(self.parameters['temp_dir'])
-                print("Deleted directory: " + self.parameters['temp_dir'])
+                print("Deleting: " + self.parameters['input_dir'] + " ...")
+                shutil.rmtree(self.parameters['input_dir'])
+                print("Deleted directory: " + self.parameters['input_dir'])
             except FileNotFoundError:
-                print("Directory does not exist: " + self.parameters['temp_dir'])
+                print("Directory does not exist: " + self.parameters['input_dir'])
 
     def stitch_button_pressed(self):
         logging.debug("Stitch Button Pressed")
