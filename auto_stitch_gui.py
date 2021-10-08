@@ -169,7 +169,7 @@ class AutoStitchGUI(QWidget):
                                              QMessageBox.Yes | QMessageBox.No)
         if delete_dialog == QMessageBox.Yes:
             try:
-                print("Deleting: " + self.parameters['ouput_dir'] + " ...")
+                print("Deleting: " + self.parameters['output_dir'] + " ...")
                 shutil.rmtree(self.parameters['output_dir'])
                 print("Deleted directory: " + self.parameters['output_dir'])
             except FileNotFoundError:
