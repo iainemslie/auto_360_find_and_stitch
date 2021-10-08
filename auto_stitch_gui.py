@@ -61,6 +61,7 @@ class AutoStitchGUI(QWidget):
 
         self.set_layout()
         self.resize(800, 0)
+        self.setFixedSize(800, 0)
 
         self.init_values()
         self.show()
