@@ -165,15 +165,15 @@ class AutoStitchGUI(QWidget):
 
     def delete_button_pressed(self):
         logging.debug("Delete Output Directory Button Pressed")
-        delete_dialog = QMessageBox.question(self, 'Quit', 'Are you sure you want to delete the temporary directory?',
+        delete_dialog = QMessageBox.question(self, 'Quit', 'Are you sure you want to delete the output directory?',
                                              QMessageBox.Yes | QMessageBox.No)
         if delete_dialog == QMessageBox.Yes:
             try:
-                print("Deleting: " + self.parameters['input_dir'] + " ...")
-                shutil.rmtree(self.parameters['input_dir'])
-                print("Deleted directory: " + self.parameters['input_dir'])
+                print("Deleting: " + self.parameters['ouput_dir'] + " ...")
+                shutil.rmtree(self.parameters['output_dir'])
+                print("Deleted directory: " + self.parameters['output_dir'])
             except FileNotFoundError:
-                print("Directory does not exist: " + self.parameters['input_dir'])
+                print("Directory does not exist: " + self.parameters['output_dir'])
 
     def stitch_button_pressed(self):
         logging.debug("Stitch Button Pressed")
@@ -181,7 +181,7 @@ class AutoStitchGUI(QWidget):
         if not os.path.isdir(self.parameters['output_dir']):
             self.auto_stitch_funcs.run_auto_stitch()
         else:
-            print("--> Temp Directory Exists - Delete Before Proceeding")
+            print("--> Output Directory Exists - Delete Before Proceeding")
 
 
 if __name__ == '__main__':
