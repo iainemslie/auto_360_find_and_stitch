@@ -85,9 +85,9 @@ class AutoStitchGUI(QWidget):
         layout.addWidget(self.overlap_region_label, 3, 2)
         layout.addWidget(self.overlap_region_entry, 3, 3)
         layout.addWidget(self.left_hand_checkbox, 3, 0, 1, 2)
-        layout.addWidget(self.help_button, 4, 0, 1, 2)
+        layout.addWidget(self.stitch_button, 4, 0, 1, 2)
+        layout.addWidget(self.help_button, 4, 3, 1, 3)
         layout.addWidget(self.delete_temp_button, 4, 2, 1, 1)
-        layout.addWidget(self.stitch_button, 4, 3, 1, 3)
         self.setLayout(layout)
 
     def init_values(self):
@@ -177,7 +177,7 @@ class AutoStitchGUI(QWidget):
     def stitch_button_pressed(self):
         logging.debug("Stitch Button Pressed")
         self.auto_stitch_funcs = AutoStitchFunctions(self.parameters)
-        if not os.path.isdir(self.parameters['temp_dir']):
+        if not os.path.isdir(self.parameters['output_dir']):
             self.auto_stitch_funcs.run_auto_stitch()
         else:
             print("--> Temp Directory Exists - Delete Before Proceeding")
