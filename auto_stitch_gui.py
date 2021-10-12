@@ -176,6 +176,8 @@ class AutoStitchGUI(QWidget):
                 print("Directory does not exist: " + self.parameters['output_dir'])
 
     def stitch_button_pressed(self):
+        logging.basicConfig(filename=os.path.join(self.parameters['output_dir'], "auto_stitch"), level=logging.INFO)
+
         logging.debug("Stitch Button Pressed")
         self.auto_stitch_funcs = AutoStitchFunctions(self.parameters)
         if not os.path.isdir(self.parameters['output_dir']):

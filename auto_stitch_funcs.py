@@ -1,4 +1,5 @@
 import os
+import logging
 import tifffile
 import numpy as np
 import multiprocessing as mp
@@ -29,6 +30,7 @@ class AutoStitchFunctions:
         print("==> Found the following z-views and their corresponding axis of rotation <==")
         for key in self.ct_axis_dict:
             print(str(key) + " : " + str(self.ct_axis_dict[key]))
+            logging.info(str(key) + " : " + str(self.ct_axis_dict[key]))
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("Stitching Images...")
