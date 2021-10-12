@@ -35,7 +35,7 @@ class AutoStitchFunctions:
         print("Greatest axis value: " + self.greatest_axis_value)
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("\nStitching Images...")
-        self.find_and_stitch_images()
+        #self.find_and_stitch_images()
 
         print("--> Finished Stitching")
 
@@ -256,7 +256,7 @@ class AutoStitchFunctions:
         print("======================== Parameters ========================")
         print("Input Directory: " + self.parameters['input_dir'])
         print("Output Directory: " + self.parameters['output_dir'])
-        print("Using common set of flats and darks: " + self.parameters['common_flats_darks'])
+        print("Using common set of flats and darks: " + str(self.parameters['common_flats_darks']))
         print("Flats Directory: " + self.parameters['flats_dir'])
         print("Darks Directory: " + self.parameters['darks_dir'])
         print("Overlap Region Size: " + self.parameters['overlap_region'])
