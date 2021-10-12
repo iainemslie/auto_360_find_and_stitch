@@ -174,6 +174,7 @@ class AutoStitchFunctions:
         Log contains directory path and axis value
         :return:
         '''
+        os.makedirs(self.parameters['output_dir'], mode=0o777)
         file_path = os.path.join(self.parameters['output_dir'], 'axis_values.info')
         print("Axis values log file stores at: " + file_path)
         file_handle = open(file_path, 'w')
