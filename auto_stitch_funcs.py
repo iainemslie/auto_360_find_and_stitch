@@ -13,6 +13,7 @@ class AutoStitchFunctions:
         self.ct_dirs = []
         self.ct_axis_dict = {}
         self.parameters = parameters
+        self.greatest_axis_value = 0
 
     def run_auto_stitch(self):
         """
@@ -30,6 +31,8 @@ class AutoStitchFunctions:
         print("\n ==> Found the following z-views and their corresponding axis of rotation <==")
         self.log_axis_values_to_file()
 
+        self.find_greatest_axis_value()
+        print("Greatest axis value: " + self.greatest_axis_value)
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("\nStitching Images...")
         self.find_and_stitch_images()
@@ -172,9 +175,8 @@ class AutoStitchFunctions:
 
     def log_axis_values_to_file(self):
         '''
-        Creates a log file at the root of the output_dir tree structure
-        Log contains directory path and axis value
-        :return:
+        Creates a log file with extension .info at the root of the output_dir tree structure
+        Log file contains directory path and axis value
         '''
         os.makedirs(self.parameters['output_dir'], mode=0o777)
         file_path = os.path.join(self.parameters['output_dir'], 'axis_values.info')
@@ -184,6 +186,13 @@ class AutoStitchFunctions:
             key_value_str = str(key) + " : " + str(self.ct_axis_dict[key])
             print(key_value_str)
             file_handle.write(key_value_str + '\n')
+
+    def find_greatest_axis_value(self):
+        """
+        Looks through all axis values and determines the greatest value
+        """
+        axis_list = list(self.ct_axis_dict.values())
+        self.greatest_axis_value = max(axis_list)
 
     def find_and_stitch_images(self):
         index = range(len(self.ct_dirs))
@@ -235,7 +244,8 @@ class AutoStitchFunctions:
             first_path = os.path.join(in_path, type_str, image_list[index])
             second_path = os.path.join(in_path, type_str, image_list[midpoint + index])
             output_image_path = os.path.join(out_path, type_str, type_str + "_stitched_{:>04}.tif".format(index))
-            self.open_images_and_stitch(rotation_axis, 0, first_path, second_path, output_image_path)
+            crop_amount = abs(self.greatest_axis_value - round(rotation_axis))
+            self.open_images_and_stitch(rotation_axis, crop_amount, first_path, second_path, output_image_path)
 
     def print_parameters(self):
         """
@@ -246,6 +256,7 @@ class AutoStitchFunctions:
         print("======================== Parameters ========================")
         print("Input Directory: " + self.parameters['input_dir'])
         print("Output Directory: " + self.parameters['output_dir'])
+        print("Using common set of flats and darks: " + self.parameters['common_flats_darks'])
         print("Flats Directory: " + self.parameters['flats_dir'])
         print("Darks Directory: " + self.parameters['darks_dir'])
         print("Overlap Region Size: " + self.parameters['overlap_region'])
