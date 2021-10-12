@@ -28,9 +28,7 @@ class AutoStitchFunctions:
         print("--> Finding Axis of Rotation for each Z-View")
         self.find_images_and_compute_centre()
         print("==> Found the following z-views and their corresponding axis of rotation <==")
-        for key in self.ct_axis_dict:
-            print(str(key) + " : " + str(self.ct_axis_dict[key]))
-            logging.info(str(key) + " : " + str(self.ct_axis_dict[key]))
+        self.log_axis_values_to_file()
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("Stitching Images...")
@@ -169,6 +167,20 @@ class AutoStitchFunctions:
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
 
         return (width / 2.0 + center) / 2
+
+    def log_axis_values_to_file(self):
+        '''
+        Creates a log file at the root of the output_dir tree structure
+        Log contains directory path and axis value
+        :return:
+        '''
+        file_path = os.path.join(self.parameters['output_dir'], 'axis_values.info')
+        print("Axis values log file stores at: " + file_path)
+        file_handle = open(file_path, 'w')
+        for key in self.ct_axis_dict:
+            key_value_str = str(key) + " : " + str(self.ct_axis_dict[key])
+            print(key_value_str)
+            file_handle.write(key_value_str)
 
     def find_and_stitch_images(self):
         index = range(len(self.ct_dirs))
