@@ -241,6 +241,11 @@ class AutoStitchFunctions:
             print("Before : ", end="")
             print(z_dir_list)
 
+            # Need to account for the case where the first z-view is an outlier
+            min_value = min(z_dir_list)
+            if z_dir_list[0] > min_value + 2:
+                z_dir_list[0] = min_value
+
             # Compare the difference of successive pairwise axis values
             # If the difference is greater than 3 then set the second pair value to be 1 more than the first pair value
             for index in range(len(z_dir_list) - 1):
@@ -252,11 +257,6 @@ class AutoStitchFunctions:
                     z_dir_list[index + 1] = z_dir_list[index] + 1
             print("After : ", end="")
             print(z_dir_list)
-
-            # Need to account for the case where the first z-view is an outlier
-            min_value = min(z_dir_list)
-            if z_dir_list[0] > min_value + 2:
-                z_dir_list[0] = min_value
 
             # Assigns the values in z_dir_list back to the ct_dir_dict
             index = 0
