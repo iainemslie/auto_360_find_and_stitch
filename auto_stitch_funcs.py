@@ -228,6 +228,10 @@ class AutoStitchFunctions:
             sorted_by_ctdir_dict[path_key][zdir] = axis_value
 
         print(sorted_by_ctdir_dict)
+        for dir_key in sorted_by_ctdir_dict:
+            z_dir_list = sorted_by_ctdir_dict[dir_key].values()
+            print(z_dir_list)
+
 
     def find_greatest_axis_value(self):
         """
