@@ -223,6 +223,12 @@ class AutoStitchFunctions:
         file_handle.write("\nGreatest axis value: " + str(self.greatest_axis_value))
 
     def correct_outliers(self):
+        """
+        This function looks at each CTDir containing Z00-Z0N
+        If the axis values for successive zviews are greater than 3 (an outlier)
+        Then we correct this by tying the outlier to the previous Z-View axis plus one
+        self.ct_axis_dict is updated with corrected axis values
+        """
         sorted_by_ctdir_dict = defaultdict(dict)
         for key in self.ct_axis_dict:
             path_key, zdir = os.path.split(str(key))
@@ -234,8 +240,9 @@ class AutoStitchFunctions:
             z_dir_list = list(sorted_by_ctdir_dict[dir_key].values())
             print("Before : ", end="")
             print(z_dir_list)
-            # TODO : Need to check that first index is not an outlier
 
+            # Compare the difference of successive pairwise axis values
+            # If the difference is greater than 3 then set the second pair value to be 1 more than the first pair value
             for index in range(len(z_dir_list) - 1):
                 first_value = z_dir_list[index]
                 second_value = z_dir_list[index + 1]
@@ -246,12 +253,20 @@ class AutoStitchFunctions:
             print("After : ", end="")
             print(z_dir_list)
 
+            # Need to account for the case where the first z-view is an outlier
+            min_value = min(z_dir_list)
+            if z_dir_list[0] > min_value + 2:
+                z_dir_list[0] = min_value
+
+            # Assigns the values in z_dir_list back to the ct_dir_dict
             index = 0
             for zdir in sorted_by_ctdir_dict[dir_key]:
                 corrected_axis_value = z_dir_list[index]
                 sorted_by_ctdir_dict[dir_key][zdir] = corrected_axis_value
                 index += 1
         print(sorted_by_ctdir_dict)
+
+        # Assigns the corrected values back to self.ct_axis_dict
         for path_key in sorted_by_ctdir_dict:
             for z_key in sorted_by_ctdir_dict[path_key]:
                 path_string = os.path.join(str(path_key), str(z_key))
