@@ -128,7 +128,10 @@ class AutoStitchGUI(QWidget):
 
     def set_flats_darks_group(self):
         logging.debug("Use Common Flats/Darks: " + str(self.flats_darks_group.isChecked()))
-        self.parameters['common_flats_darks'] = True
+        if self.parameters['common_flats_darks'] is True:
+            self.parameters['common_flats_darks'] = False
+        else:
+            self.parameters['common_flats_darks'] = True
 
     def flats_button_pressed(self):
         logging.debug("Flats Button Pressed")

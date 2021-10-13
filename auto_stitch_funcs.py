@@ -1,5 +1,4 @@
 import os
-import logging
 import tifffile
 import numpy as np
 import multiprocessing as mp
@@ -29,13 +28,21 @@ class AutoStitchFunctions:
         print("--> Finding Axis of Rotation for each Z-View")
         self.find_images_and_compute_centre()
         print("\n ==> Found the following z-views and their corresponding axis of rotation <==")
-        self.log_axis_values_to_file()
 
+        # Check the axis values and adjust for any outliers
+        # If difference between two subsequent zdirs is > 3 then just change it to be 1 greater than previous
+        # TODO self.correct_outliers()
+
+        # Find the greatest axis value for use in determining overall cropping amount when stitching
         self.find_greatest_axis_value()
-        print("Greatest axis value: " + self.greatest_axis_value)
+        print("Greatest axis value: " + str(self.greatest_axis_value))
+
+        # Output the input parameters and axis values to the log file
+        self.write_to_log_file()
+
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
-        print("\nStitching Images...")
-        #self.find_and_stitch_images()
+        print("\n--> Stitching Images...")
+        self.find_and_stitch_images()
 
         print("--> Finished Stitching")
 
@@ -123,6 +130,10 @@ class AutoStitchFunctions:
             second = tif.pages[-1].asarray().astype(np.float)
 
         # Do flat field correction on the images
+        # TODO : Flat field correction using common flats/dirs or local flats/dirs
+        # Case 1: Using darks/flats/flats2 in each CTdir alongside tomo
+
+        # Case 2: Using common set of flats and darks
         flat_files = self.get_filtered_filenames(self.parameters['flats_dir'])
         dark_files = self.get_filtered_filenames(self.parameters['darks_dir'])
         flats = np.array([tifffile.TiffFile(x).asarray().astype(np.float) for x in flat_files])
@@ -173,7 +184,7 @@ class AutoStitchFunctions:
 
         return (width / 2.0 + center) / 2
 
-    def log_axis_values_to_file(self):
+    def write_to_log_file(self):
         '''
         Creates a log file with extension .info at the root of the output_dir tree structure
         Log file contains directory path and axis value
@@ -182,10 +193,24 @@ class AutoStitchFunctions:
         file_path = os.path.join(self.parameters['output_dir'], 'axis_values.info')
         print("Axis values log file stored at: " + file_path)
         file_handle = open(file_path, 'w')
+        # Print input parameters
+        file_handle.write("======================== Parameters ========================" + "\n")
+        file_handle.write("Input Directory: " + self.parameters['input_dir'] + "\n")
+        file_handle.write("Output Directory: " + self.parameters['output_dir'] + "\n")
+        file_handle.write("Using common set of flats and darks: " + str(self.parameters['common_flats_darks']) + "\n")
+        file_handle.write("Flats Directory: " + self.parameters['flats_dir'] + "\n")
+        file_handle.write("Darks Directory: " + self.parameters['darks_dir'] + "\n")
+        file_handle.write("Overlap Region Size: " + self.parameters['overlap_region'] + "\n")
+        file_handle.write("Axis on left: " + self.parameters['axis_on_left'] + "\n")
+
+        # Print z-directory and corresponding axis value
+        file_handle.write("\n======================== Axis Values ========================\n")
         for key in self.ct_axis_dict:
             key_value_str = str(key) + " : " + str(self.ct_axis_dict[key])
             print(key_value_str)
             file_handle.write(key_value_str + '\n')
+
+        file_handle.write("\nGreatest axis value: " + str(self.greatest_axis_value))
 
     def find_greatest_axis_value(self):
         """
@@ -302,229 +327,3 @@ class AutoStitchFunctions:
         result[:, w:] = second[:, dx:]
 
         return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
-
-    '''
-    def create_temp_dir(self):
-        """
-        Creates the temp directory and its subdirectories
-        The range directory contains directories named in sequence
-        from the start of the horizontal overlap range until the end
-        """
-        try:
-            os.mkdir(self.parameters['temp_dir'])
-            print("--> Creating Temp Directory: " + self.parameters['temp_dir'])
-            ct_items = self.z_dirs.items()
-            for ct_dir in ct_items:
-                os.makedirs(os.path.join(self.parameters['temp_dir'], ct_dir[0]))
-                for z_dir in ct_dir[1]:
-                    os.makedirs(os.path.join(self.parameters['temp_dir'], ct_dir[0], z_dir, "projections"))
-                    os.makedirs(os.path.join(self.parameters['temp_dir'], ct_dir[0], z_dir, "range"))
-                    for num in range(self.overlap_range + 1):
-                        tmp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0],
-                                                z_dir, "range", str(int(self.parameters['overlap_start']) + num))
-                        os.makedirs(os.path.join(tmp_path, "tomo"))
-                        os.makedirs(os.path.join(tmp_path, "darks"))
-                        os.makedirs(os.path.join(tmp_path, "flats"))
-        except FileExistsError:
-            print("--> Directory " + self.parameters['temp_dir'] +
-                  " already exists - select a different temp directory or delete the current one")
-
-    def find_and_stitch_images(self):
-        """
-        Gets the images corresponding to 0 degrees and 180 degrees.
-        In a dataset of 6000 images - we want 0 and 2999 stitched for 0 degrees - and 3000 and 5999 for 180 degrees
-        Also gets the full list of flats/darks and stitches those in pairs
-        """
-        ct_items = self.z_dirs.items()
-        for ct_dir in ct_items:
-            for zdir in ct_dir[1]:
-                # Get list of image names in the directory
-                try:
-                    tmp_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "tomo")
-                    image_list = sorted(os.listdir(tmp_path))
-                    num_images = len(image_list)
-                    # Get the images corresponding to 0 and 180 degree rotations in half-acquisition mode
-                    first_zero_degree_image = image_list[0]
-                    second_zero_degree_image = image_list[int(num_images/2)-1]
-                    first_180_degree_image = image_list[int((num_images/2))]
-                    second_180_degree_image = image_list[num_images-1]
-                    # Get absolute paths for these images
-                    first_zero_degree_image_path = os.path.join(tmp_path, first_zero_degree_image)
-                    second_zero_degree_image_path = os.path.join(tmp_path, second_zero_degree_image)
-                    first_180_degree_image_path = os.path.join(tmp_path, first_180_degree_image)
-                    second_180_degree_image_path = os.path.join(tmp_path, second_180_degree_image)
-                    # Get the list of images in flats, darks
-                    tmp_flat_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "flats")
-                    flats_list = sorted(os.listdir(os.path.join(tmp_flat_path)))
-                    tmp_dark_path = os.path.join(self.parameters['input_dir'], ct_dir[0], zdir, "darks")
-                    darks_list = sorted(os.listdir(os.path.join(tmp_dark_path)))
-                    # For each axis value in overlap range we stitch corresponding images and save to temp directory
-                    pool = mp.Pool(processes=mp.cpu_count())
-                    index = range(self.overlap_range + 1)
-                    exec_func = partial(self.stitch_fdt, ct_dir, zdir, first_zero_degree_image_path, second_zero_degree_image_path,
-                                        first_180_degree_image_path, second_180_degree_image_path,
-                                        flats_list, tmp_flat_path, darks_list, tmp_dark_path)
-                    pool.map(exec_func, index)
-                except NotADirectoryError:
-                    print("Skipped - Not a Directory: " + tmp_path)
-
-
-    def stitch_fdt(self, ct_dir, zdir, first_zero_degree_image_path, second_zero_degree_image_path,
-                   first_180_degree_image_path, second_180_degree_image_path, flats_list, tmp_flat_path,
-                   darks_list, tmp_dark_path, index):
-        """
-        Stitches together the input flats/darks/tomo images and outputs to temp directory
-        """
-        rotation_axis = int(self.parameters['overlap_start']) + index
-        out_path = os.path.join(self.parameters['temp_dir'], ct_dir[0],
-                                zdir, "range", str(rotation_axis))
-        slice_zero_path = os.path.join(out_path, "tomo", "Sli-0.tif")
-        slice_180_path = os.path.join(out_path, "tomo", "Sli-180.tif")
-        self.open_images_and_stitch(rotation_axis, 0, first_zero_degree_image_path,
-                                    second_zero_degree_image_path, slice_zero_path)
-        self.open_images_and_stitch(rotation_axis, 0, first_180_degree_image_path,
-                                    second_180_degree_image_path, slice_180_path)
-        # Stitch pairs of images together - for 20 images we stitch 0-10, 1-11, ..., 9-19
-        flat_midpoint = int(len(flats_list) / 2)
-        for flat_index in range(flat_midpoint):
-            first_flat_path = os.path.join(tmp_flat_path, flats_list[flat_index])
-            second_flat_path = os.path.join(tmp_flat_path, flats_list[flat_index + flat_midpoint])
-            flat_out_path = os.path.join(out_path, "flats", "Flat_stitched_{:>04}.tif".format(flat_index))
-            self.open_images_and_stitch(rotation_axis, 0, first_flat_path, second_flat_path, flat_out_path)
-        dark_midpoint = int(len(darks_list) / 2)
-        for dark_index in range(dark_midpoint):
-            first_dark_path = os.path.join(tmp_dark_path, darks_list[dark_index])
-            second_dark_path = os.path.join(tmp_dark_path, darks_list[dark_index + dark_midpoint])
-            dark_out_path = os.path.join(out_path, "darks", "Dark_stitched_{:>04}.tif".format(dark_index))
-            self.open_images_and_stitch(rotation_axis, 0, first_dark_path, second_dark_path, dark_out_path)
-
-    def flat_field_correction(self):
-        """
-        Get flats/darks/tomo paths in temp directory and call tofu flat correction
-        """
-        ct_items = self.z_dirs.items()
-        for ct_dir in ct_items:
-            print(ct_dir[0])
-            for zdir in ct_dir[1]:
-                print("-->" + zdir)
-                temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range")
-                range_list = os.listdir(temp_path)
-                for index in range_list:
-                    try:
-                        index_path = os.path.join(temp_path, index)
-                        tomo_path = os.path.join(index_path, "tomo")
-                        flats_path = os.path.join(index_path, "flats")
-                        darks_path = os.path.join(index_path, "darks")
-                        # Flat correct image using darks and flats - save tomo/ffc
-                        cmd = 'tofu flatcorrect --fix-nan-and-inf --output-bytes-per-file 0'
-                        cmd += ' --projections {}'.format(tomo_path + "/Sli-0.tif")
-                        cmd += ' --flats {}'.format(flats_path)
-                        cmd += ' --darks {}'.format(darks_path)
-                        cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', str(index) + '-sli-0.tif'))
-                        os.system(cmd)
-                        cmd = 'tofu flatcorrect --fix-nan-and-inf --output-bytes-per-file 0'
-                        cmd += ' --projections {}'.format(tomo_path + "/Sli-180.tif")
-                        cmd += ' --flats {}'.format(flats_path)
-                        cmd += ' --darks {}'.format(darks_path)
-                        cmd += ' --output {}'.format(os.path.join(temp_path, 'ffc', str(index) + '-sli-180.tif'))
-                        os.system(cmd)
-                    except NotADirectoryError:
-                        print("Skipped - Not a Directory: " + index_path)
-
-    def subtract_images(self):
-        """
-        For each pair of 0 and 180 degree images. Flip the 180 degree image around the vertical axis
-        Subtract 180 degree image from the 0 degree image
-        Save the images to the projections directory
-        """
-        overlap_start = int(self.parameters['overlap_start'])
-        ct_items = self.z_dirs.items()
-        for ct_dir in ct_items:
-            for zdir in ct_dir[1]:
-                temp_path = os.path.join(self.parameters['temp_dir'], ct_dir[0], zdir, "range", "ffc")
-                for num in range(self.overlap_range + 1):
-                    # Create paths for corresponding 0 and 180 degree images - and for the output subtracted image
-                    image_0_path = os.path.join(temp_path, str(overlap_start + num) + "-sli-0.tif")
-                    image_180_path = os.path.join(temp_path, str(overlap_start + num) + "-sli-180.tif")
-                    subtracted_image_path = os.path.join(self.parameters['temp_dir'], ct_dir[0],
-                                                         zdir, "projections",
-                                                         "sli-" + str(overlap_start + num) + ".tif")
-                    # Open corresponding 0 and 180 degree images
-                    image_0 = tifffile.imread(image_0_path)
-                    image_180 = tifffile.imread(image_180_path)
-                    # Flip the 180 degree image left-right (around "Cartesian y-axis")
-                    flipped_180_image = np.fliplr(image_180)
-                    # Subtract flipped 180 degree image from 0 degree image
-                    subtracted_image = np.subtract(flipped_180_image, image_0)
-                    # Save the subtracted image
-                    tifffile.imwrite(subtracted_image_path, subtracted_image)
-    '''
-
-    '''
-    def stitch_fdt(self, rotation_axis, tomo_path, flats_path, darks_path, flats2_path, output_path):
-
-        # Get list of names of images in tomo directory
-        tomo_image_list = sorted(os.listdir(tomo_path))
-        tomo_midpoint = int(len(tomo_image_list) / 2)
-        for tomo_index in range(tomo_midpoint):
-            first_tomo_path = os.path.join(tomo_path, tomo_image_list[tomo_index])
-            second_tomo_path = os.path.join(tomo_path, tomo_image_list[tomo_index + tomo_midpoint])
-            tomo_out_path = os.path.join(output_path, "tomo", "Tomo_stitched_{:>04}.tif".format(tomo_index))
-            self.open_images_and_stitch(rotation_axis, 0, first_tomo_path, second_tomo_path, tomo_out_path)
-
-        # Get list of names of images in flats directory
-        flats_image_list = sorted(os.listdir(flats_path))
-        flat_midpoint = int(len(flats_image_list) / 2)
-        for flat_index in range(flat_midpoint):
-            first_flat_path = os.path.join(flats_path, flats_image_list[flat_index])
-            second_flat_path = os.path.join(flats_path, flats_image_list[flat_index + flat_midpoint])
-            flat_out_path = os.path.join(output_path, "flats", "Flat_stitched_{:>04}.tif".format(flat_index))
-            self.open_images_and_stitch(rotation_axis, 0, first_flat_path, second_flat_path, flat_out_path)
-
-        # Get list of names of images in darks directory
-        darks_image_list = sorted(os.listdir(darks_path))
-        dark_midpoint = int(len(darks_image_list) / 2)
-        for dark_index in range(dark_midpoint):
-            first_dark_path = os.path.join(darks_path, darks_image_list[dark_index])
-            second_dark_path = os.path.join(darks_path, darks_image_list[dark_index + dark_midpoint])
-            dark_out_path = os.path.join(output_path, "darks", "Dark_stitched_{:>04}.tif".format(dark_index))
-            self.open_images_and_stitch(rotation_axis, 0, first_dark_path, second_dark_path, dark_out_path)
-
-        # Get list of names of images in flats2 directory
-        flats2_image_list = sorted(os.listdir(flats2_path))
-        flat2_midpoint = int(len(flats2_image_list) / 2)
-        for flat2_index in range(flat2_midpoint):
-            first_flat2_path = os.path.join(flats2_path, flats2_image_list[flat2_index])
-            second_flat2_path = os.path.join(flats2_path, flats2_image_list[flat2_index + flat2_midpoint])
-            flat2_out_path = os.path.join(output_path, "flats2", "Flat2_stitched_{:>04}.tif".format(flat2_index))
-            self.open_images_and_stitch(rotation_axis, 0, first_flat2_path, second_flat2_path, flat2_out_path)
-    '''
-    '''
-    
-        def get_ct_list(self):
-            """
-            Creates a list containing the "sample" or CT directory names
-            """
-            if len(self.ct_dirs) == 0:
-                print("--> No valid CT Directories found - Please select a different input directory")
-            else:
-                for path in self.ct_dirs:
-                    ct_path, z_dir = os.path.split(path)
-                    parent_path, ct_name = os.path.split(ct_path)
-                    self.ct_list.append(ct_name)
-                self.ct_list = sorted(list(set(self.ct_list)))
-    
-        def get_z_dirs(self):
-            """
-            Creates a dictionary where each key is a CTDir and its value is a list of its subdirectories
-            """
-            try:
-                for ct_dir in self.ct_list:
-                    zdir_list = os.listdir(self.parameters['input_dir'] + "/" + ct_dir)
-                    for zdir in zdir_list:
-                        if os.path.isfile(os.path.join(self.parameters['input_dir'], ct_dir, zdir)):
-                            zdir_list.remove(zdir)
-                    self.z_dirs[ct_dir] = sorted(zdir_list)
-            except FileNotFoundError:
-                print("File Not Found Error")
-    '''
