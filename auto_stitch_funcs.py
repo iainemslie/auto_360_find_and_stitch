@@ -1,5 +1,6 @@
 import os
 import tifffile
+import shutil
 import numpy as np
 import multiprocessing as mp
 from functools import partial
@@ -244,14 +245,24 @@ class AutoStitchFunctions:
             out_path = os.path.join(self.parameters['output_dir'], diff_path)
             rotation_axis = self.ct_axis_dict[z_dir_path]
 
-            self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "tomo")
-            # Need to account for case where flats, darks, flats2 don't exist
-            if os.path.isdir(os.path.join(z_dir_path, "flats")):
-                self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "flats")
-            if os.path.isdir(os.path.join(z_dir_path, "darks")):
-                self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "darks")
-            if os.path.isdir(os.path.join(z_dir_path, "flats2")):
-                self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "flats2")
+            # If using common flats/darks across all zdirs
+            # then use common flats/darks directories as source of images to stitch and save to output zdirs
+            if self.parameters['common_flats_darks'] is True:
+                self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "tomo")
+                flats_parent_path, garbage = os.path.split(self.parameters['flats_dir'])
+                self.stitch_180_pairs(rotation_axis, flats_parent_path, out_path, "flats")
+                darks_parent_path, garbage = os.path.split(self.parameters['darks_dir'])
+                self.stitch_180_pairs(rotation_axis, darks_parent_path, out_path, "darks")
+            # If using local flats/darks to each zdir then use those as source for stitching
+            elif self.parameters['common_flats_darks'] is False:
+                self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "tomo")
+                # Need to account for case where flats, darks, flats2 don't exist
+                if os.path.isdir(os.path.join(z_dir_path, "flats")):
+                    self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "flats")
+                if os.path.isdir(os.path.join(z_dir_path, "darks")):
+                    self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "darks")
+                if os.path.isdir(os.path.join(z_dir_path, "flats2")):
+                    self.stitch_180_pairs(rotation_axis, z_dir_path, out_path, "flats2")
 
             print("--> " + str(z_dir_path))
             print("Axis of rotation: " + str(rotation_axis))
