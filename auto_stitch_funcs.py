@@ -224,7 +224,7 @@ class AutoStitchFunctions:
         for key in self.ct_axis_dict:
             path_key, zdir = os.path.split(str(key))
             axis_value = self.ct_axis_dict[key]
-            sorted_by_ctdir_dict[path_key] = {zdir: axis_value}
+            sorted_by_ctdir_dict[path_key][zdir] = axis_value
 
         print(sorted_by_ctdir_dict)
 
