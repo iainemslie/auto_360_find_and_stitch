@@ -46,7 +46,7 @@ class AutoStitchFunctions:
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("\n--> Stitching Images...")
-        # self.find_and_stitch_images()
+        self.find_and_stitch_images()
 
         print("--> Finished Stitching")
 
@@ -235,11 +235,8 @@ class AutoStitchFunctions:
             axis_value = self.ct_axis_dict[key]
             sorted_by_ctdir_dict[path_key][zdir] = axis_value
 
-        print(sorted_by_ctdir_dict)
         for dir_key in sorted_by_ctdir_dict:
             z_dir_list = list(sorted_by_ctdir_dict[dir_key].values())
-            print("Before : ", end="")
-            print(z_dir_list)
 
             # Need to account for the case where the first z-view is an outlier
             min_value = min(z_dir_list)
@@ -255,8 +252,6 @@ class AutoStitchFunctions:
                 if difference > 3:
                     # Set second value to be one more than first
                     z_dir_list[index + 1] = z_dir_list[index] + 1
-            print("After : ", end="")
-            print(z_dir_list)
 
             # Assigns the values in z_dir_list back to the ct_dir_dict
             index = 0
@@ -264,7 +259,6 @@ class AutoStitchFunctions:
                 corrected_axis_value = z_dir_list[index]
                 sorted_by_ctdir_dict[dir_key][zdir] = corrected_axis_value
                 index += 1
-        print(sorted_by_ctdir_dict)
 
         # Assigns the corrected values back to self.ct_axis_dict
         for path_key in sorted_by_ctdir_dict:
