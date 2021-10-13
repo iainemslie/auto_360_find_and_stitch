@@ -1,6 +1,7 @@
 import os
 import tifffile
 import shutil
+from collections import defaultdict
 import numpy as np
 import multiprocessing as mp
 from functools import partial
@@ -220,7 +221,7 @@ class AutoStitchFunctions:
         file_handle.write("\nGreatest axis value: " + str(self.greatest_axis_value))
 
     def correct_outliers(self):
-        sorted_by_ctdir_dict = {}
+        sorted_by_ctdir_dict = defaultdict(dict)
         for key in self.ct_axis_dict:
             path_key, zdir = os.path.split(str(key))
             axis_value = self.ct_axis_dict[key]
