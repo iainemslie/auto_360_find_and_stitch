@@ -32,7 +32,7 @@ class AutoStitchFunctions:
 
         # Check the axis values and adjust for any outliers
         # If difference between two subsequent zdirs is > 3 then just change it to be 1 greater than previous
-        # TODO self.correct_outliers()
+        self.correct_outliers()
 
         # Find the greatest axis value for use in determining overall cropping amount when stitching
         self.find_greatest_axis_value()
@@ -218,6 +218,15 @@ class AutoStitchFunctions:
             file_handle.write(key_value_str + '\n')
 
         file_handle.write("\nGreatest axis value: " + str(self.greatest_axis_value))
+
+    def correct_outliers(self):
+        sorted_by_ctdir_dict = {}
+        for key in self.ct_axis_dict:
+            path_key, zdir = os.path.split(str(key))
+            axis_value = self.ct_axis_dict[key]
+            sorted_by_ctdir_dict[path_key] = {zdir: axis_value}
+
+        print(sorted_by_ctdir_dict)
 
     def find_greatest_axis_value(self):
         """
