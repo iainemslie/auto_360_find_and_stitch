@@ -249,7 +249,7 @@ class AutoStitchFunctions:
                 corrected_axis_value = z_dir_list[counter]
                 sorted_by_ctdir_dict[path_key][zdir] = corrected_axis_value
                 counter += 1
-            print(sorted_by_ctdir_dict)
+        print(sorted_by_ctdir_dict)
 
     def find_greatest_axis_value(self):
         """
