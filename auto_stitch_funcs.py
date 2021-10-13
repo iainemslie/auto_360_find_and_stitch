@@ -230,14 +230,16 @@ class AutoStitchFunctions:
         print(sorted_by_ctdir_dict)
         for dir_key in sorted_by_ctdir_dict:
             z_dir_list = list(sorted_by_ctdir_dict[dir_key].values())
+            print("Before : ", end="")
             print(z_dir_list)
             for index in range(len(z_dir_list) - 1):
                 first_value = z_dir_list[index]
                 second_value = z_dir_list[index+1]
-                difference = second_value - first_value
+                difference = abs(second_value - first_value)
                 if difference > 3:
                     # Set second value to be one more than first
                     z_dir_list[index + 1] = z_dir_list[index] + 1
+            print("After : ", end="")
             print(z_dir_list)
 
 
