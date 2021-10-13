@@ -47,8 +47,8 @@ class AutoStitchGUI(QWidget):
         self.overlap_region_entry = QLineEdit()
         self.overlap_region_entry.textChanged.connect(self.set_overlap_region_entry)
 
-        self.left_hand_checkbox = QCheckBox("Is the rotation axis on the left-hand side of the image?")
-        self.left_hand_checkbox.stateChanged.connect(self.set_left_hand_checkbox)
+        self.sample_on_right_checkbox = QCheckBox("Is the sample on the right side of the image?")
+        self.sample_on_right_checkbox.stateChanged.connect(self.set_sample_on_right_checkbox)
 
         self.help_button = QPushButton("Help")
         self.help_button.clicked.connect(self.help_button_pressed)
@@ -85,7 +85,7 @@ class AutoStitchGUI(QWidget):
 
         layout.addWidget(self.overlap_region_label, 3, 2)
         layout.addWidget(self.overlap_region_entry, 3, 3)
-        layout.addWidget(self.left_hand_checkbox, 3, 0, 1, 2)
+        layout.addWidget(self.sample_on_right_checkbox, 3, 0, 1, 2)
         layout.addWidget(self.stitch_button, 4, 0, 1, 2)
         layout.addWidget(self.help_button, 4, 3, 1, 3)
         layout.addWidget(self.delete_temp_button, 4, 2, 1, 1)
@@ -101,7 +101,7 @@ class AutoStitchGUI(QWidget):
         self.parameters['darks_dir'] = ""
         self.overlap_region_entry.setText("770")
         self.parameters['overlap_region'] = "770"
-        self.left_hand_checkbox.setChecked(False)
+        self.sample_on_right_checkbox.setChecked(False)
         self.parameters['axis_on_left'] = str(False)
 
     def input_button_pressed(self):
@@ -159,9 +159,9 @@ class AutoStitchGUI(QWidget):
         logging.debug("Overlap Region: " + str(self.overlap_region_entry.text()))
         self.parameters['overlap_region'] = str(self.overlap_region_entry.text())
 
-    def set_left_hand_checkbox(self):
-        logging.debug("Rotation axis on left-hand-side checkbox: " + str(self.left_hand_checkbox.isChecked()))
-        self.parameters['axis_on_left'] = str(self.left_hand_checkbox.isChecked())
+    def set_sample_on_right_checkbox(self):
+        logging.debug("Sample is on right side of the image: " + str(self.sample_on_right_checkbox.isChecked()))
+        self.parameters['axis_on_left'] = str(self.sample_on_right_checkbox.isChecked())
 
     def help_button_pressed(self):
         logging.debug("Help Button Pressed")
