@@ -270,7 +270,7 @@ class AutoStitchFunctions:
             second_path = os.path.join(in_path, type_str, image_list[midpoint + index])
             output_image_path = os.path.join(out_path, type_str, type_str + "_stitched_{:>04}.tif".format(index))
             crop_amount = abs(self.greatest_axis_value - round(rotation_axis))
-            self.open_images_and_stitch(rotation_axis, crop_amount, first_path, second_path, output_image_path)
+            self.open_images_stitch_write(rotation_axis, crop_amount, first_path, second_path, output_image_path)
 
     def print_parameters(self):
         """
@@ -295,7 +295,7 @@ class AutoStitchFunctions:
         with tifffile.TiffFile(file_name) as f:
             return f.asarray(out='memmap')
 
-    def open_images_and_stitch(self, ax, crop, first_image_path, second_image_path, out_fmt):
+    def open_images_stitch_write(self, ax, crop, first_image_path, second_image_path, out_fmt):
         # We pass index and formats as argument
         first = self.read_image(first_image_path)
         second = self.read_image(second_image_path)
