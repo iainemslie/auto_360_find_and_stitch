@@ -43,7 +43,7 @@ class AutoStitchGUI(QWidget):
         self.darks_entry = QLineEdit()
         self.darks_entry.textChanged.connect(self.set_darks_entry)
 
-        self.overlap_region_label = QLabel("Overlap Region Size")
+        self.overlap_region_label = QLabel("Overlapping Pixels")
         self.overlap_region_entry = QLineEdit()
         self.overlap_region_entry.textChanged.connect(self.set_overlap_region_entry)
 
