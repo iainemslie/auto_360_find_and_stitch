@@ -34,7 +34,7 @@ class AutoStitchFunctions:
         # Check the axis values and adjust for any outliers
         # If difference between two subsequent zdirs is > 3 then just change it to be 1 greater than previous
         self.correct_outliers()
-        print("ct_axis_dict after correction: ")
+        print("--> ct_axis_dict after correction: ")
         print(self.ct_axis_dict)
 
         # Find the greatest axis value for use in determining overall cropping amount when stitching
