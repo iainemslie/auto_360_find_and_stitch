@@ -83,8 +83,8 @@ class AutoStitchFunctions:
         zview_path = self.ct_dirs[index]
         # Get list of image names in the directory
         try:
-            tmp_path = os.path.join(zview_path, "tomo")
-            image_list = sorted(os.listdir(tmp_path))
+            tomo_path = os.path.join(zview_path, "tomo")
+            image_list = sorted(os.listdir(tomo_path))
             num_images = len(image_list)
 
             # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode -
@@ -95,11 +95,11 @@ class AutoStitchFunctions:
             three_sixty_degree_image_name = image_list[-1]
 
             # Get the paths for the images
-            zero_degree_image_path = os.path.join(tmp_path, zero_degree_image_name)
-            one_eighty_degree_image_path = os.path.join(tmp_path, one_eighty_degree_image_name)
-            ninety_degree_image_path = os.path.join(tmp_path, ninety_degree_image_name)
-            two_seventy_degree_image_path = os.path.join(tmp_path, two_seventy_degree_image_name)
-            three_sixty_degree_image_path = os.path.join(tmp_path, three_sixty_degree_image_name)
+            zero_degree_image_path = os.path.join(tomo_path, zero_degree_image_name)
+            one_eighty_degree_image_path = os.path.join(tomo_path, one_eighty_degree_image_name)
+            ninety_degree_image_path = os.path.join(tomo_path, ninety_degree_image_name)
+            two_seventy_degree_image_path = os.path.join(tomo_path, two_seventy_degree_image_name)
+            three_sixty_degree_image_path = os.path.join(tomo_path, three_sixty_degree_image_name)
 
             # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
             axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
@@ -116,7 +116,7 @@ class AutoStitchFunctions:
             return {zview_path: geometric_mean}
 
         except NotADirectoryError:
-            print("Skipped - Not a Directory: " + tmp_path)
+            print("Skipped - Not a Directory: " + tomo_path)
 
     def compute_center(self, zero_degree_image_path, one_eighty_degree_image_path):
         """
