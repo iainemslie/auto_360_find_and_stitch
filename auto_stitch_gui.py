@@ -249,10 +249,17 @@ class AutoStitchGUI(QWidget):
 
     def stitch_button_pressed(self):
         logging.debug("Stitch Button Pressed")
-        self.auto_stitch_funcs = AutoStitchFunctions(self.parameters)
-        if not os.path.isdir(self.parameters['output_dir']):
+        try:
+            # Create the output directory root and save the parameters.yaml file
+            os.makedirs(self.parameters['output_dir'], mode=0o777)
+            file_path = os.path.join(self.parameters['output_dir'], 'auto_stitch_parameters.yaml')
+            file_out = open(file_path, 'w')
+            yaml.dump(self.parameters, file_out)
+            print("Parameters file saved at: " + str(file_path))
+
+            self.auto_stitch_funcs = AutoStitchFunctions(self.parameters)
             self.auto_stitch_funcs.run_auto_stitch()
-        else:
+        except FileExistsError:
             print("--> Output Directory Exists - Delete Before Proceeding")
 
 

@@ -158,8 +158,6 @@ class AutoStitchFunctions:
         first = (first - dark) / flat
         second = (second - dark) / flat
 
-        # We must multiply by two to get the "actual" overlap region
-        # overlap_region = int(2 * int(self.parameters['overlap_region']))
         # We must crop the first image from first pixel column up until overlap
         first_cropped = first[:, :int(self.parameters['overlap_region'])]
         # We must crop the 180 degree rotation (which has been flipped 180) from width-overlap until last pixel column
@@ -204,7 +202,6 @@ class AutoStitchFunctions:
         Creates a log file with extension .info at the root of the output_dir tree structure
         Log file contains directory path and axis value
         '''
-        os.makedirs(self.parameters['output_dir'], mode=0o777)
         file_path = os.path.join(self.parameters['output_dir'], 'axis_values.info')
         print("Axis values log file stored at: " + file_path)
         file_handle = open(file_path, 'w')
