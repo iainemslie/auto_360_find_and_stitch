@@ -26,6 +26,11 @@ class AutoStitchFunctions:
         print("--> Finding CT Directories")
         self.find_ct_dirs()
 
+        if len(self.ct_dirs) == 0:
+            print("Error: Could not find any input CT directories")
+            print("-> Ensure that the directory you selected contains subdirectories named 'tomo'")
+            return -1
+
         # For each zview we compute the axis of rotation
         print("--> Finding Axis of Rotation for each Z-View")
         self.find_images_and_compute_centre()
@@ -211,7 +216,7 @@ class AutoStitchFunctions:
         file_handle.write("Flats Directory: " + self.parameters['flats_dir'] + "\n")
         file_handle.write("Darks Directory: " + self.parameters['darks_dir'] + "\n")
         file_handle.write("Overlap Region Size: " + self.parameters['overlap_region'] + "\n")
-        file_handle.write("Axis on left: " + self.parameters['axis_on_left'] + "\n")
+        file_handle.write("Sample on right: " + self.parameters['sample_on_right'] + "\n")
 
         # Print z-directory and corresponding axis value
         file_handle.write("\n======================== Axis Values ========================\n")
@@ -349,7 +354,7 @@ class AutoStitchFunctions:
         print("Flats Directory: " + self.parameters['flats_dir'])
         print("Darks Directory: " + self.parameters['darks_dir'])
         print("Overlap Region Size: " + self.parameters['overlap_region'])
-        print("Axis on left: " + self.parameters['axis_on_left'])
+        print("Sample on right: " + str(self.parameters['sample_on_right']))
         print("============================================================")
 
     """****** BORROWED FUNCTIONS ******"""

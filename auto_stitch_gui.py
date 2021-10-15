@@ -2,11 +2,11 @@ import os
 import sys
 import logging
 import shutil
+import yaml
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QFileDialog, QCheckBox,\
                             QMessageBox, QGroupBox
 from auto_stitch_funcs import AutoStitchFunctions
-
 
 class AutoStitchGUI(QWidget):
 
@@ -15,7 +15,7 @@ class AutoStitchGUI(QWidget):
         self.setWindowTitle('Auto Stitch')
 
         logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.WARNING)
 
         self.parameters = {}
         self.auto_stitch_funcs = None
@@ -49,6 +49,12 @@ class AutoStitchGUI(QWidget):
 
         self.sample_on_right_checkbox = QCheckBox("Is the sample on the right side of the image?")
         self.sample_on_right_checkbox.stateChanged.connect(self.set_sample_on_right_checkbox)
+
+        self.save_params_button = QPushButton("Save parameters")
+        self.save_params_button.clicked.connect(self.save_params_button_clicked)
+
+        self.import_params_button = QPushButton("Import parameters")
+        self.import_params_button.clicked.connect(self.import_params_button_clicked)
 
         self.help_button = QPushButton("Help")
         self.help_button.clicked.connect(self.help_button_pressed)
@@ -86,9 +92,13 @@ class AutoStitchGUI(QWidget):
         layout.addWidget(self.overlap_region_label, 3, 2)
         layout.addWidget(self.overlap_region_entry, 3, 3)
         layout.addWidget(self.sample_on_right_checkbox, 3, 0, 1, 2)
-        layout.addWidget(self.stitch_button, 4, 0, 1, 2)
-        layout.addWidget(self.help_button, 4, 3, 1, 3)
-        layout.addWidget(self.delete_temp_button, 4, 2, 1, 1)
+
+        layout.addWidget(self.save_params_button, 4, 0, 1, 2)
+        layout.addWidget(self.import_params_button, 4, 3, 1, 1)
+        layout.addWidget(self.help_button, 4, 2, 1, 1)
+
+        layout.addWidget(self.stitch_button, 5, 0, 1, 3)
+        layout.addWidget(self.delete_temp_button, 5, 3, 1, 1)
         self.setLayout(layout)
 
     def init_values(self):
@@ -99,10 +109,23 @@ class AutoStitchGUI(QWidget):
         self.parameters['flats_dir'] = ""
         self.darks_entry.setText("...enter darks directory")
         self.parameters['darks_dir'] = ""
-        self.overlap_region_entry.setText("770")
-        self.parameters['overlap_region'] = "770"
+        self.overlap_region_entry.setText("1540")
+        self.parameters['overlap_region'] = "1540"
         self.sample_on_right_checkbox.setChecked(False)
-        self.parameters['axis_on_left'] = str(False)
+        self.parameters['sample_on_right'] = False
+
+    def update_parameters(self, new_parameters):
+        logging.debug("Update parameters")
+        # Update parameters dictionary (which is passed to auto_stitch_funcs)
+        self.parameters = new_parameters
+        # Update displayed parameters for GUI
+        self.input_entry.setText(self.parameters['input_dir'])
+        self.output_entry.setText(self.parameters['output_dir'])
+        self.flats_darks_group.setChecked(bool(self.parameters['common_flats_darks']))
+        self.flats_entry.setText(self.parameters['flats_dir'])
+        self.darks_entry.setText(self.parameters['darks_dir'])
+        self.sample_on_right_checkbox.setChecked(bool(self.parameters['sample_on_right']))
+        self.overlap_region_entry.setText(self.parameters['overlap_region'])
 
     def input_button_pressed(self):
         logging.debug("Input Button Pressed")
@@ -161,11 +184,55 @@ class AutoStitchGUI(QWidget):
 
     def set_sample_on_right_checkbox(self):
         logging.debug("Sample is on right side of the image: " + str(self.sample_on_right_checkbox.isChecked()))
-        self.parameters['axis_on_left'] = str(self.sample_on_right_checkbox.isChecked())
+        self.parameters['sample_on_right'] = self.sample_on_right_checkbox.isChecked()
+
+    def save_params_button_clicked(self):
+        logging.debug("Save params button clicked")
+        dir_explore = QFileDialog(self)
+        params_file_path = dir_explore.getSaveFileName(filter="*.yaml")
+        garbage, file_name = os.path.split(params_file_path[0])
+        file_extension = os.path.splitext(file_name)
+        # If the user doesn't enter the .yaml extension then append it to filepath
+        if file_extension[-1] == "":
+            file_path = params_file_path[0] + ".yaml"
+        else:
+            file_path = params_file_path[0]
+        try:
+            file_out = open(file_path, 'w')
+            yaml.dump(self.parameters, file_out)
+            print("Parameters file saved at: " + str(file_path))
+        except FileNotFoundError:
+            print("You need to select a directory and use a valid file name")
+
+    def import_params_button_clicked(self):
+        logging.debug("Import params button clicked")
+        dir_explore = QFileDialog(self)
+        params_file_path = dir_explore.getOpenFileName(filter="*.yaml")
+        try:
+            file_in = open(params_file_path[0], 'r')
+            new_parameters = yaml.load(file_in, Loader=yaml.FullLoader)
+            self.update_parameters(new_parameters)
+            print("Parameters file loaded from: " + str(params_file_path[0]))
+        except FileNotFoundError:
+            print("You need to select a valid input file")
 
     def help_button_pressed(self):
         logging.debug("Help Button Pressed")
-        h = "Lorem Ipsum\n"
+        h = "Auto-Stitch is used to automatically find the axis of rotation" \
+            " in order to stitch pairs of images gathered in half-acquisition mode.\n\n"
+        h += "The input directory must contain at least one directory named 'tomo' containing .tiff image files.\n\n"
+        h += "The output directory, containing the stitched images," \
+             " maintains the structure of the directory tree rooted at the input directory.\n\n"
+        h += "If the experiment uses one set of flats/darks the" \
+             " 'Use Common Set of Flats and Darks' checkbox must be selected." \
+             " These will then be copied and stitched according to the axis of rotation of each zview.\n\n"
+        h += "If each z-view contains its own set of flats/darks then" \
+             " auto_stitch will automatically use these for flat-field correction and stitching.\n\n"
+        h += "In most cases of half-acquisition the sample is positioned on the left-side of the image." \
+             " Select the 'Is sample on the right side of the image?' checkbox if it is on the right.\n\n"
+        h += "The 'Overlapping Pixels' entry determines the region of" \
+             " the images which will be used to determine the axis of rotation.\n\n"
+        h += "Parameters can be saved to and loaded from .yaml files of the user's choice.\n\n"
         QMessageBox.information(self, "Help", h)
 
     def delete_button_pressed(self):
