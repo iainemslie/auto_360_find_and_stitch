@@ -51,7 +51,7 @@ class AutoStitchFunctions:
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("\n--> Stitching Images...")
-        #self.find_and_stitch_images()
+        self.find_and_stitch_images()
 
         print("--> Finished Stitching")
 
@@ -138,7 +138,6 @@ class AutoStitchFunctions:
         with tifffile.TiffFile(one_eighty_degree_image_path) as tif:
             second = tif.pages[-1].asarray().astype(np.float)
 
-        print(self.parameters)
         # Do flat field correction on the images
         # Case 1: Using darks/flats/flats2 in each CTdir alongside tomo
         if self.parameters['common_flats_darks'] is False:
@@ -214,7 +213,7 @@ class AutoStitchFunctions:
         file_handle.write("Flats Directory: " + self.parameters['flats_dir'] + "\n")
         file_handle.write("Darks Directory: " + self.parameters['darks_dir'] + "\n")
         file_handle.write("Overlap Region Size: " + self.parameters['overlap_region'] + "\n")
-        file_handle.write("Sample on right: " + self.parameters['sample_on_right'] + "\n")
+        file_handle.write("Sample on right: " + str(self.parameters['sample_on_right']) + "\n")
 
         # Print z-directory and corresponding axis value
         file_handle.write("\n======================== Axis Values ========================\n")
