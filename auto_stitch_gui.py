@@ -225,7 +225,7 @@ class AutoStitchGUI(QWidget):
              " maintains the structure of the directory tree rooted at the input directory.\n\n"
         h += "If the experiment uses one set of flats/darks the" \
              " 'Use Common Set of Flats and Darks' checkbox must be selected." \
-             " These will then be copied and stitched according to the axis of rotation of each zview.\n\n"
+             " These will then be copied and stitched according to the axis of rotation of each z-view.\n\n"
         h += "If each z-view contains its own set of flats/darks then" \
              " auto_stitch will automatically use these for flat-field correction and stitching.\n\n"
         h += "In most cases of half-acquisition the sample is positioned on the left-side of the image." \
