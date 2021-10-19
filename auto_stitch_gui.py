@@ -17,7 +17,7 @@ class AutoStitchGUI(QWidget):
         logger = logging.getLogger()
         logger.setLevel(logging.WARNING)
 
-        self.parameters = {}
+        self.parameters = {'parameters_type': 'auto_horizontal_stitch'}
         self.auto_stitch_funcs = None
 
         self.input_button = QPushButton("Select Input Path")
