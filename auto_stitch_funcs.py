@@ -38,8 +38,6 @@ class AutoStitchFunctions:
 
         # Check the axis values and adjust for any outliers
         # If difference between two subsequent zdirs is > 3 then just change it to be 1 greater than previous
-        print("--> ct_axis_dict before correction: ")
-        print(self.ct_axis_dict)
         self.correct_outliers()
         print("--> ct_axis_dict after correction: ")
         print(self.ct_axis_dict)
@@ -52,10 +50,10 @@ class AutoStitchFunctions:
         self.write_to_log_file()
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
-        print("\n--> Stitching Images...")
-        self.find_and_stitch_images()
-
-        print("--> Finished Stitching")
+        if not self.parameters['dry_run']:
+            print("\n--> Stitching Images...")
+            self.find_and_stitch_images()
+            print("--> Finished Stitching")
 
     def find_ct_dirs(self):
         """

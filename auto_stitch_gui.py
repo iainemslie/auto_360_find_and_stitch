@@ -65,6 +65,9 @@ class AutoStitchGUI(QWidget):
         self.stitch_button = QPushButton("Stitch")
         self.stitch_button.clicked.connect(self.stitch_button_pressed)
 
+        self.dry_run_checkbox = QCheckBox("Dry Run")
+        self.dry_run_checkbox.stateChanged.connect(self.set_dry_run_checkbox)
+
         self.set_layout()
         self.resize(800, 0)
         self.setFixedSize(800, 0)
@@ -97,7 +100,8 @@ class AutoStitchGUI(QWidget):
         layout.addWidget(self.import_params_button, 4, 3, 1, 1)
         layout.addWidget(self.help_button, 4, 2, 1, 1)
 
-        layout.addWidget(self.stitch_button, 5, 0, 1, 3)
+        layout.addWidget(self.stitch_button, 5, 0, 1, 2)
+        layout.addWidget(self.dry_run_checkbox, 5, 2, 1, 1)
         layout.addWidget(self.delete_temp_button, 5, 3, 1, 1)
         self.setLayout(layout)
 
@@ -113,6 +117,8 @@ class AutoStitchGUI(QWidget):
         self.parameters['overlap_region'] = "1540"
         self.sample_on_right_checkbox.setChecked(False)
         self.parameters['sample_on_right'] = False
+        self.dry_run_checkbox.setChecked(False)
+        self.parameters['dry_run'] = False
 
     def update_parameters(self, new_parameters):
         logging.debug("Update parameters")
@@ -126,6 +132,7 @@ class AutoStitchGUI(QWidget):
         self.darks_entry.setText(self.parameters['darks_dir'])
         self.sample_on_right_checkbox.setChecked(bool(self.parameters['sample_on_right']))
         self.overlap_region_entry.setText(self.parameters['overlap_region'])
+        self.dry_run_checkbox.setChecked(bool(self.parameters['dry_run']))
 
     def input_button_pressed(self):
         logging.debug("Input Button Pressed")
@@ -262,6 +269,9 @@ class AutoStitchGUI(QWidget):
         except FileExistsError:
             print("--> Output Directory Exists - Delete Before Proceeding")
 
+    def set_dry_run_checkbox(self):
+        logging.debug("Dry Run Checkbox: " + str(self.dry_run_checkbox.isChecked()))
+        self.parameters['dry_run'] = self.dry_run_checkbox.isChecked()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
