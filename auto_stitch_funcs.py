@@ -147,7 +147,7 @@ class AutoStitchFunctions:
                              self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path)]
             # Otherwise, we compute the centre based on 0-180 and 180-360 pairs
             else:
-                # Get the images corresponding to 0, and 180 degree rotations in half-acquisition mode -
+                # Get the images corresponding to 0, 180 and 360 degree rotations in half-acquisition mode -
                 zero_degree_image_name = image_list[0]
                 one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
                 three_sixty_degree_image_name = image_list[-1]
