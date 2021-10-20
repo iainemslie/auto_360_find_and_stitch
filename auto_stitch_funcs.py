@@ -169,9 +169,9 @@ class AutoStitchFunctions:
             # If mode occurs more than 4 times then pick it as axis value, otherwise use geometric mean
             most_common_value = max(set(axis_list), key=axis_list.count)
             if axis_list.count(most_common_value) > 4:
-                axis_value = round(most_common_value)
+                axis_value = most_common_value
             else:
-                axis_value = round(gmean(axis_list))
+                axis_value = math.ceil(gmean(axis_list))
 
             print("Axis value: " + str(axis_value))
             # Return each zview and its axis of rotation value as key-value pair
