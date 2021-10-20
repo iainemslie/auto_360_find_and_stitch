@@ -38,6 +38,8 @@ class AutoStitchFunctions:
 
         # Check the axis values and adjust for any outliers
         # If difference between two subsequent zdirs is > 3 then just change it to be 1 greater than previous
+        print("--> ct_axis_dict before correction: ")
+        print(self.ct_axis_dict)
         self.correct_outliers()
         print("--> ct_axis_dict after correction: ")
         print(self.ct_axis_dict)
