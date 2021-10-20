@@ -134,11 +134,17 @@ class AutoStitchFunctions:
         :param one_eighty_degree_image_path: Second sample scan rotated 180 degree from first sample scan
         :return: The axis of rotation based on the correlation of two 180 degree image pairs
         """
-        # Read each image into a numpy array
-        with tifffile.TiffFile(zero_degree_image_path) as tif:
-            first = tif.pages[0].asarray().astype(np.float)
-        with tifffile.TiffFile(one_eighty_degree_image_path) as tif:
-            second = tif.pages[-1].asarray().astype(np.float)
+        # TODO: Flip differently from sample on right side here
+        if self.parameters['sample_on_right'] is False:
+            # Read each image into a numpy array
+            first = self.read_image(zero_degree_image_path, False)
+            # We flip the second image
+            second = self.read_image(one_eighty_degree_image_path, True)
+        elif self.parameters['sample_on_right'] is True:
+            # Read each image into a numpy array
+            first = self.read_image(zero_degree_image_path, True)
+            # We flip the second image
+            second = self.read_image(one_eighty_degree_image_path, False)
 
         # Do flat field correction on the images
         # Case 1: Using darks/flats/flats2 in each CTdir alongside tomo
@@ -153,6 +159,7 @@ class AutoStitchFunctions:
         elif self.parameters['common_flats_darks'] is True:
             flat_files = self.get_filtered_filenames(self.parameters['flats_dir'])
             dark_files = self.get_filtered_filenames(self.parameters['darks_dir'])
+
         flats = np.array([tifffile.TiffFile(x).asarray().astype(np.float) for x in flat_files])
         darks = np.array([tifffile.TiffFile(x).asarray().astype(np.float) for x in dark_files])
         dark = np.mean(darks, axis=0)
@@ -358,17 +365,33 @@ class AutoStitchFunctions:
 
     """****** BORROWED FUNCTIONS ******"""
 
-    def read_image(self, file_name):
-        """Read tiff file from disk by :py:mod:`tifffile` module."""
-        with tifffile.TiffFile(file_name) as f:
-            return f.asarray(out='memmap')
+    # TODO: Read images in same way when computing axis and stitching, add argument for flipping at input
+    def read_image(self, file_name, flip_image):
+        """
+        Reads in a tiff image from disk at location specified by file_name, returns a numpy array
+        :param file_name: Str - path to file
+        :param flip_image: Bool - Whether image is to be flipped horizontally or not
+        :return: A numpy array of type float
+        """
+        if flip_image is True:
+            with tifffile.TiffFile(file_name) as tif:
+                return tif.pages[-1].asarray(out='memmap')
+        elif flip_image is False:
+            with tifffile.TiffFile(file_name) as tif:
+                return tif.pages[0].asarray(out='memmap')
 
     def open_images_stitch_write(self, ax, crop, first_image_path, second_image_path, out_fmt):
-        # We pass index and formats as argument
-        first = self.read_image(first_image_path)
-        second = self.read_image(second_image_path)
-        # We flip the second image before stitching
-        second = np.fliplr(second)
+        if self.parameters['sample_on_right'] is False:
+            # Read each image into a numpy array
+            first = self.read_image(first_image_path, flip_image=False)
+            # We flip the second image
+            second = self.read_image(second_image_path, flip_image=True)
+        if self.parameters['sample_on_right'] is True:
+            # We pass index and formats as argument
+            first = self.read_image(first_image_path, flip_image=True)
+            # We flip the second image before stitching
+            second = self.read_image(second_image_path, flip_image=False)
+
         stitched = self.stitch(first, second, ax, crop)
         tifffile.imwrite(out_fmt, stitched)
 

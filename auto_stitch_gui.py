@@ -15,7 +15,7 @@ class AutoStitchGUI(QWidget):
         self.setWindowTitle('Auto Stitch')
 
         logger = logging.getLogger()
-        logger.setLevel(logging.WARNING)
+        logger.setLevel(logging.DEBUG)
 
         self.parameters = {'parameters_type': 'auto_horizontal_stitch'}
         self.auto_stitch_funcs = None
