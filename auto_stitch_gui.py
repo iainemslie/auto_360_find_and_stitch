@@ -240,6 +240,7 @@ class AutoStitchGUI(QWidget):
         h += "The 'Overlapping Pixels' entry determines the region of" \
              " the images which will be used to determine the axis of rotation.\n\n"
         h += "Parameters can be saved to and loaded from .yaml files of the user's choice.\n\n"
+        h += "If the dry run button is selected the program will find the axis values without stitching the images.\n\n"
         QMessageBox.information(self, "Help", h)
 
     def delete_button_pressed(self):
