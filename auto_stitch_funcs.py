@@ -171,7 +171,7 @@ class AutoStitchFunctions:
             if axis_list.count(most_common_value) > 4:
                 axis_value = most_common_value
             else:
-                axis_value = math.ceil(gmean(axis_list))
+                axis_value = self.col_round(gmean(axis_list))
 
             print("Axis value: " + str(axis_value))
             # Return each zview and its axis of rotation value as key-value pair
@@ -256,7 +256,7 @@ class AutoStitchFunctions:
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
 
-        return math.ceil((width / 2.0 + center) / 2)
+        return self.col_round((width / 2.0 + center) / 2)
 
     def write_to_log_file(self):
         '''
@@ -468,3 +468,8 @@ class AutoStitchFunctions:
         result[:, w:] = second[:, dx:]
 
         return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
+
+    def col_round(x):
+        frac = x - math.floor(x)
+        if frac < 0.5: return math.floor(x)
+        return math.ceil(x)
