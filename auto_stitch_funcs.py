@@ -469,7 +469,7 @@ class AutoStitchFunctions:
 
         return result[:, slice(int(crop), int(2 * (w - axis) - crop), 1)]
 
-    def col_round(x):
+    def col_round(self, x):
         frac = x - math.floor(x)
         if frac < 0.5: return math.floor(x)
         return math.ceil(x)
