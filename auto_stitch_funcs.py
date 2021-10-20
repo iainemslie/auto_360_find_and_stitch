@@ -6,7 +6,7 @@ import numpy as np
 import multiprocessing as mp
 from functools import partial
 from scipy.stats import gmean, hmean
-
+import math
 
 class AutoStitchFunctions:
     def __init__(self, parameters):
@@ -256,7 +256,7 @@ class AutoStitchFunctions:
         convolved = fftconvolve(first_projection, last_projection[::-1, :], mode='same')
         center = np.unravel_index(convolved.argmax(), convolved.shape)[1]
 
-        return round((width / 2.0 + center) / 2)
+        return math.ceil((width / 2.0 + center) / 2)
 
     def write_to_log_file(self):
         '''
