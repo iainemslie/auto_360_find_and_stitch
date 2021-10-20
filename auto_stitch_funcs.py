@@ -5,7 +5,7 @@ from collections import defaultdict
 import numpy as np
 import multiprocessing as mp
 from functools import partial
-from scipy.stats import gmean
+from scipy.stats import gmean, hmean
 
 
 class AutoStitchFunctions:
@@ -51,7 +51,7 @@ class AutoStitchFunctions:
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("\n--> Stitching Images...")
-        self.find_and_stitch_images()
+        #self.find_and_stitch_images()
 
         print("--> Finished Stitching")
 
@@ -92,33 +92,67 @@ class AutoStitchFunctions:
             image_list = sorted(os.listdir(tomo_path))
             num_images = len(image_list)
 
-            # TODO: Do 8 pairs of 180 degree pairs instead of 4 pairs
+            # If the number of images is divisible by eight we do eight 180 degree pairs in 45 degree increments
+            if num_images % 8 == 0:
+                # Get the names of the images in 45 degree increments starting from 0
+                zero_degree_image_name = image_list[0]
+                one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
+                forty_five_degree_image_name = image_list[int(num_images / 8) - 1]
+                two_twenty_five_degree_image_name = image_list[int(num_images * 5 / 8) - 1]
+                ninety_degree_image_name = image_list[int(num_images / 4) - 1]
+                two_seventy_degree_image_name = image_list[int(num_images * 3 / 4) - 1]
+                one_thirty_five_degree_image_name = image_list[int(num_images * 3 / 8) - 1]
+                three_fifteen_degree_image_name = image_list[int(num_images * 7 / 8) - 1]
+                three_sixty_degree_image_name = image_list[-1]
 
-            # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode -
-            zero_degree_image_name = image_list[0]
-            one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
-            ninety_degree_image_name = image_list[int(num_images / 4) - 1]
-            two_seventy_degree_image_name = image_list[int(num_images * 3 / 4) - 1]
-            three_sixty_degree_image_name = image_list[-1]
+                # Get the paths for the images
+                zero_degree_image_path = os.path.join(tomo_path, zero_degree_image_name)
+                forty_five_degree_image_path = os.path.join(tomo_path, forty_five_degree_image_name)
+                ninety_degree_image_path = os.path.join(tomo_path, ninety_degree_image_name)
+                one_thirty_five_degree_image_path = os.path.join(tomo_path, one_thirty_five_degree_image_name)
+                one_eighty_degree_image_path = os.path.join(tomo_path, one_eighty_degree_image_name)
+                two_twenty_five_degree_image_path = os.path.join(tomo_path, two_twenty_five_degree_image_name)
+                two_seventy_degree_image_path = os.path.join(tomo_path, two_seventy_degree_image_name)
+                three_fifteen_degree_image_path = os.path.join(tomo_path, three_fifteen_degree_image_name)
+                three_sixty_degree_image_path = os.path.join(tomo_path, three_sixty_degree_image_name)
 
-            # Get the paths for the images
-            zero_degree_image_path = os.path.join(tomo_path, zero_degree_image_name)
-            one_eighty_degree_image_path = os.path.join(tomo_path, one_eighty_degree_image_name)
-            ninety_degree_image_path = os.path.join(tomo_path, ninety_degree_image_name)
-            two_seventy_degree_image_path = os.path.join(tomo_path, two_seventy_degree_image_name)
-            three_sixty_degree_image_path = os.path.join(tomo_path, three_sixty_degree_image_name)
+                axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
+                             self.compute_center(forty_five_degree_image_path, two_twenty_five_degree_image_path),
+                             self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
+                             self.compute_center(one_thirty_five_degree_image_path, three_fifteen_degree_image_path),
+                             self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path),
+                             self.compute_center(two_twenty_five_degree_image_path, forty_five_degree_image_path),
+                             self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path),
+                             self.compute_center(three_fifteen_degree_image_path, one_thirty_five_degree_image_path)]
+            # If the number of images is not divisible by eight we do four 180 degree pairs in 90 degree increments
+            else:
+                # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode -
+                zero_degree_image_name = image_list[0]
+                one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
+                ninety_degree_image_name = image_list[int(num_images / 4) - 1]
+                two_seventy_degree_image_name = image_list[int(num_images * 3 / 4) - 1]
+                three_sixty_degree_image_name = image_list[-1]
 
-            # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
-            axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
-                         self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
-                         self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path),
-                         self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path)]
+                # Get the paths for the images
+                zero_degree_image_path = os.path.join(tomo_path, zero_degree_image_name)
+                one_eighty_degree_image_path = os.path.join(tomo_path, one_eighty_degree_image_name)
+                ninety_degree_image_path = os.path.join(tomo_path, ninety_degree_image_name)
+                two_seventy_degree_image_path = os.path.join(tomo_path, two_seventy_degree_image_name)
+                three_sixty_degree_image_path = os.path.join(tomo_path, three_sixty_degree_image_name)
+
+                # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
+                axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
+                             self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
+                             self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path),
+                             self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path)]
 
             # Find the average of 180 degree rotation pairs
             print("--> " + str(zview_path))
             print(axis_list)
             geometric_mean = round(gmean(axis_list))
+            harmonic_mean = round(hmean(axis_list))
             print("Geometric Mean: " + str(geometric_mean))
+            print("Harmonic Mean: " + str(harmonic_mean))
             # Return each zview and its axis of rotation value as key-value pair
             return {zview_path: geometric_mean}
 
