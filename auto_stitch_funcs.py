@@ -51,7 +51,7 @@ class AutoStitchFunctions:
 
         # For each ct-dir and z-view we want to stitch all the images using the values in ct_axis_dict
         print("\n--> Stitching Images...")
-        self.find_and_stitch_images()
+        #self.find_and_stitch_images()
 
         print("--> Finished Stitching")
 
@@ -124,6 +124,7 @@ class AutoStitchFunctions:
                              self.compute_center(two_twenty_five_degree_image_path, forty_five_degree_image_path),
                              self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path),
                              self.compute_center(three_fifteen_degree_image_path, one_thirty_five_degree_image_path)]
+
             # If the number of images is not divisible by eight we do four 180 degree pairs in 90 degree increments
             elif num_images % 4 == 0:
                 # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode -
@@ -164,12 +165,17 @@ class AutoStitchFunctions:
             # Find the average of 180 degree rotation pairs
             print("--> " + str(zview_path))
             print(axis_list)
-            geometric_mean = round(gmean(axis_list))
-            harmonic_mean = round(hmean(axis_list))
-            print("Geometric Mean: " + str(geometric_mean))
-            print("Harmonic Mean: " + str(harmonic_mean))
+
+            # If mode occurs more than 4 times then pick it as axis value, otherwise use geometric mean
+            most_common_value = max(set(axis_list), key=axis_list.count)
+            if axis_list.count(most_common_value) > 4:
+                axis_value = round(most_common_value)
+            else:
+                axis_value = round(gmean(axis_list))
+
+            print("Axis value: " + str(axis_value))
             # Return each zview and its axis of rotation value as key-value pair
-            return {zview_path: geometric_mean}
+            return {zview_path: axis_value}
 
         except NotADirectoryError:
             print("Skipped - Not a Directory: " + tomo_path)
