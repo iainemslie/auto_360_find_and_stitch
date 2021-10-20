@@ -125,7 +125,7 @@ class AutoStitchFunctions:
                              self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path),
                              self.compute_center(three_fifteen_degree_image_path, one_thirty_five_degree_image_path)]
             # If the number of images is not divisible by eight we do four 180 degree pairs in 90 degree increments
-            else:
+            elif num_images % 4 == 0:
                 # Get the images corresponding to 0, 90, 180, and 270 degree rotations in half-acquisition mode -
                 zero_degree_image_name = image_list[0]
                 one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
@@ -145,6 +145,21 @@ class AutoStitchFunctions:
                              self.compute_center(ninety_degree_image_path, two_seventy_degree_image_path),
                              self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path),
                              self.compute_center(two_seventy_degree_image_path, ninety_degree_image_path)]
+            # Otherwise, we compute the centre based on 0-180 and 180-360 pairs
+            else:
+                # Get the images corresponding to 0, and 180 degree rotations in half-acquisition mode -
+                zero_degree_image_name = image_list[0]
+                one_eighty_degree_image_name = image_list[int(num_images / 2) - 1]
+                three_sixty_degree_image_name = image_list[-1]
+
+                # Get the paths for the images
+                zero_degree_image_path = os.path.join(tomo_path, zero_degree_image_name)
+                one_eighty_degree_image_path = os.path.join(tomo_path, one_eighty_degree_image_name)
+                three_sixty_degree_image_path = os.path.join(tomo_path, three_sixty_degree_image_name)
+
+                # Determine the axis of rotation for pairs at 0-180, 90-270, 180-360 and 270-90 degrees
+                axis_list = [self.compute_center(zero_degree_image_path, one_eighty_degree_image_path),
+                             self.compute_center(one_eighty_degree_image_path, three_sixty_degree_image_path)]
 
             # Find the average of 180 degree rotation pairs
             print("--> " + str(zview_path))
