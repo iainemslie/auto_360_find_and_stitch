@@ -169,7 +169,7 @@ class AutoStitchFunctions:
             # If mode occurs more than 4 times then pick it as axis value, otherwise use geometric mean
             most_common_value = max(set(axis_list), key=axis_list.count)
             if axis_list.count(most_common_value) > 4:
-                axis_value = most_common_value
+                axis_value = self.col_round(most_common_value)
             else:
                 axis_value = self.col_round(gmean(axis_list))
 
