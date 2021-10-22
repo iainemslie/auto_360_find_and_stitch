@@ -6,7 +6,7 @@ import yaml
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QFileDialog, QCheckBox,\
                             QMessageBox, QGroupBox
-from auto_stitch_funcs import AutoStitchFunctions
+from auto_horizontal_stitch_funcs import AutoStitchFunctions
 
 class AutoStitchGUI(QWidget):
 
