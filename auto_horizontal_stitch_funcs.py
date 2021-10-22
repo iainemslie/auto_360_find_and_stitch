@@ -404,7 +404,7 @@ class AutoHorizontalStitchFunctions:
         Prints parameter values with line formatting
         """
         print()
-        print("**************************** Running Auto Stitch ****************************")
+        print("**************************** Running Auto Horizontal Stitch ****************************")
         print("======================== Parameters ========================")
         print("Input Directory: " + self.parameters['input_dir'])
         print("Output Directory: " + self.parameters['output_dir'])
