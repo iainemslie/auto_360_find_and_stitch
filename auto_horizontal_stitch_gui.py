@@ -260,13 +260,13 @@ class AutoHorizontalStitchGUI(QWidget):
         try:
             # Create the output directory root and save the parameters.yaml file
             os.makedirs(self.parameters['output_dir'], mode=0o777)
-            file_path = os.path.join(self.parameters['output_dir'], 'auto_stitch_parameters.yaml')
+            file_path = os.path.join(self.parameters['output_dir'], 'auto_vertical_stitch_parameters.yaml')
             file_out = open(file_path, 'w')
             yaml.dump(self.parameters, file_out)
             print("Parameters file saved at: " + str(file_path))
 
             self.auto_horizontal_stitch_funcs = AutoHorizontalStitchFunctions(self.parameters)
-            self.auto_horizontal_stitch_funcs.run_auto_stitch()
+            self.auto_horizontal_stitch_funcs.run_horizontal_auto_stitch()
         except FileExistsError:
             print("--> Output Directory Exists - Delete Before Proceeding")
 

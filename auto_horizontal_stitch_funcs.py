@@ -16,7 +16,7 @@ class AutoHorizontalStitchFunctions:
         self.parameters = parameters
         self.greatest_axis_value = 0
 
-    def run_auto_stitch(self):
+    def run_horizontal_auto_stitch(self):
         """
         Main function that calls all other functions
         """
