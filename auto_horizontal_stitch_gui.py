@@ -12,7 +12,7 @@ from auto_horizontal_stitch_funcs import AutoHorizontalStitchFunctions
 class AutoHorizontalStitchGUI(QWidget):
     def __init__(self, *args, **kwargs):
         super(AutoHorizontalStitchGUI, self).__init__(*args, **kwargs)
-        self.setWindowTitle('Auto Stitch')
+        self.setWindowTitle('Auto Horizontal Stitch')
 
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
