@@ -18,7 +18,7 @@ class AutoHorizontalStitchGUI(QWidget):
         logger.setLevel(logging.DEBUG)
 
         self.parameters = {'parameters_type': 'auto_horizontal_stitch'}
-        self.auto_stitch_funcs = None
+        self.auto_horizontal_stitch_funcs = None
 
         self.input_button = QPushButton("Select Input Path")
         self.input_button.clicked.connect(self.input_button_pressed)
@@ -265,8 +265,8 @@ class AutoHorizontalStitchGUI(QWidget):
             yaml.dump(self.parameters, file_out)
             print("Parameters file saved at: " + str(file_path))
 
-            self.auto_stitch_funcs = AutoHorizontalStitchFunctions(self.parameters)
-            self.auto_stitch_funcs.run_auto_stitch()
+            self.auto_horizontal_stitch_funcs = AutoHorizontalStitchFunctions(self.parameters)
+            self.auto_horizontal_stitch_funcs.run_auto_stitch()
         except FileExistsError:
             print("--> Output Directory Exists - Delete Before Proceeding")
 

@@ -4,7 +4,7 @@ from collections import defaultdict
 import numpy as np
 import multiprocessing as mp
 from functools import partial
-from scipy.stats import gmean, hmean
+from scipy.stats import gmean
 import math
 
 
