@@ -1,6 +1,5 @@
 import os
 import tifffile
-import shutil
 from collections import defaultdict
 import numpy as np
 import multiprocessing as mp

@@ -8,10 +8,10 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdi
                             QMessageBox, QGroupBox
 from auto_horizontal_stitch_funcs import AutoHorizontalStitchFunctions
 
-class AutoStitchGUI(QWidget):
 
+class AutoHorizontalStitchGUI(QWidget):
     def __init__(self, *args, **kwargs):
-        super(AutoStitchGUI, self).__init__(*args, **kwargs)
+        super(AutoHorizontalStitchGUI, self).__init__(*args, **kwargs)
         self.setWindowTitle('Auto Stitch')
 
         logger = logging.getLogger()
@@ -274,8 +274,9 @@ class AutoStitchGUI(QWidget):
         logging.debug("Dry Run Checkbox: " + str(self.dry_run_checkbox.isChecked()))
         self.parameters['dry_run'] = self.dry_run_checkbox.isChecked()
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = AutoStitchGUI()
+    window = AutoHorizontalStitchGUI()
     sys.exit(app.exec_())
 
