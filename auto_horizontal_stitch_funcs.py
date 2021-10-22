@@ -8,7 +8,8 @@ from functools import partial
 from scipy.stats import gmean, hmean
 import math
 
-class AutoStitchFunctions:
+
+class AutoHorizontalStitchFunctions:
     def __init__(self, parameters):
         self.lvl0 = os.path.abspath(parameters["input_dir"])
         self.ct_dirs = []
@@ -430,7 +431,6 @@ class AutoStitchFunctions:
         if flip_image is True:
             image = np.fliplr(image)
         return image
-
 
     def open_images_stitch_write(self, ax, crop, first_image_path, second_image_path, out_fmt):
         if self.parameters['sample_on_right'] is False:

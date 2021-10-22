@@ -6,7 +6,7 @@ import yaml
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QFileDialog, QCheckBox,\
                             QMessageBox, QGroupBox
-from auto_horizontal_stitch_funcs import AutoStitchFunctions
+from auto_horizontal_stitch_funcs import AutoHorizontalStitchFunctions
 
 class AutoStitchGUI(QWidget):
 
@@ -265,7 +265,7 @@ class AutoStitchGUI(QWidget):
             yaml.dump(self.parameters, file_out)
             print("Parameters file saved at: " + str(file_path))
 
-            self.auto_stitch_funcs = AutoStitchFunctions(self.parameters)
+            self.auto_stitch_funcs = AutoHorizontalStitchFunctions(self.parameters)
             self.auto_stitch_funcs.run_auto_stitch()
         except FileExistsError:
             print("--> Output Directory Exists - Delete Before Proceeding")
